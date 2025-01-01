@@ -1,7 +1,6 @@
 import { Text, View } from "react-native";
 import React, { useMemo, useState } from "react";
 import { BaseCard } from "@/components/base";
-import productsQueries from "@/queries/items";
 import {
   ThemedButton,
   ThemedMaterialCommunityIcons,
@@ -11,7 +10,6 @@ import {
 
 import { getString } from "@/strings/translations";
 import { StyleSheet } from "react-native-unistyles";
-import { getCurrency } from "@/storage/settings";
 import { formatCurrency } from "@/utils/formatCurrency";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 
@@ -20,7 +18,10 @@ import Reanimated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { commonStyles } from "@/theme/styles";
-import { Item } from "@/types/schema";
+import { Tables } from "@/database/database.types";
+import { observer } from "@legendapp/state/react";
+import { useAppContext } from "@/context/AppContext";
+import { Item } from "@/types/types";
 
 interface RightActionProps {
   prog: SharedValue<number>;
@@ -57,21 +58,48 @@ function RightAction({ prog, drag, onPress }: RightActionProps) {
 }
 
 const ItemsListItemCard = ({
-  itemId,
   item,
+  onPress,
 }: {
-  itemId: number;
-  item?: Item;
+  item: Item;
+  onPress?: (item: Item) => void;
 }) => {
-  const { data } = item ? { data: [item] } : productsQueries.getById(itemId);
+  const { store$ } = useAppContext();
 
-  // Get product from data
-  const product = useMemo(() => data?.[0], [data]);
+  const getBuyingPrice = useMemo(() => {
+    if (item?.selling_type === "whole") {
+      return formatCurrency("$", item?.whole_buying_price || 0);
+    } else if (item?.selling_type === "unit") {
+      return formatCurrency("$", item?.unit_buying_price || 0);
+    }
+  }, [item]);
 
-  // Get currency from storage
-  const currency = useMemo(() => getCurrency(), [product]);
+  const getSellingPrice = useMemo(() => {
+    if (item?.selling_type === "whole") {
+      return formatCurrency("$", item?.whole_selling_price || 0);
+    } else if (item?.selling_type === "unit") {
+      return formatCurrency("$", item?.unit_selling_price || 0);
+    }
+  }, [item]);
 
-  const statusColor = product?.current_stock === 0 ? "error" : "primary";
+  const getAvailableStock = useMemo(() => {
+    if (item?.selling_type === "whole") {
+      return item?.inventory?.[0]?.whole_count || 0;
+    }
+    if (item?.selling_type === "unit") {
+      return item?.inventory?.[0]?.unit_count || 0;
+    }
+  }, [item]);
+
+  styles.useVariants({
+    color: getAvailableStock === 0,
+  });
+
+  const handleItemPress = () => {
+    if (onPress) {
+      onPress(item);
+    }
+  };
 
   return (
     <ReanimatedSwipeable
@@ -87,7 +115,7 @@ const ItemsListItemCard = ({
         />
       )}
     >
-      <BaseCard style={styles.cardContainer}>
+      <BaseCard style={styles.cardContainer} onPress={handleItemPress}>
         <View
           style={[
             commonStyles.rowJustifySpaceBetween,
@@ -99,13 +127,11 @@ const ItemsListItemCard = ({
           ]}
         >
           <View style={[commonStyles.rowAlignCenter, commonStyles.gapSm]}>
-            <View
-              style={[commonStyles.backgroundColor(statusColor), styles.status]}
-            />
+            <View style={[styles.status]} />
             <ThemedText
               type="medium"
               fontSize="md"
-            >{`[${product?.sku}] ${product?.name}`}</ThemedText>
+            >{`[${item?.sku}] ${item?.name}`}</ThemedText>
           </View>
           <ThemedMaterialCommunityIcons
             color="onSurface"
@@ -132,7 +158,7 @@ const ItemsListItemCard = ({
                 {getString("form.items.current_stock.label")}
               </ThemedText>
               <ThemedText fontSize="sm" type="medium">
-                {product?.current_stock}
+                {getAvailableStock}
               </ThemedText>
             </View>
             <View style={[commonStyles.gapXs]}>
@@ -140,7 +166,7 @@ const ItemsListItemCard = ({
                 {getString("form.items.selling_price.label")}
               </ThemedText>
               <ThemedText fontSize="sm" type="medium">
-                {formatCurrency(currency, product?.selling_price || 0)}
+                {getSellingPrice}
               </ThemedText>
             </View>
           </View>
@@ -153,18 +179,20 @@ const ItemsListItemCard = ({
           >
             <View style={[commonStyles.gapXs]}>
               <ThemedText type="regular" fontSize="sm" color="onSurfaceVariant">
-                {getString("form.items.category_id.label")}
+                {getString("form.items.category.label")}
               </ThemedText>
               <ThemedText fontSize="sm" type="medium">
-                {product?.category_id}
+                {item?.category_id
+                  ? store$.CategoriesStore.getCategoryName(item?.category_id)
+                  : "-"}
               </ThemedText>
             </View>
             <View style={[commonStyles.gapXs]}>
               <ThemedText type="regular" fontSize="sm" color="onSurfaceVariant">
-                {getString("form.items.purchase_price.label")}
+                {getString("form.items.buying_price.label")}
               </ThemedText>
               <ThemedText fontSize="sm" type="medium">
-                {formatCurrency(currency, product?.purchase_price || 0)}
+                {getBuyingPrice}
               </ThemedText>
             </View>
           </View>
@@ -182,7 +210,7 @@ const ItemsListItemCard = ({
   );
 };
 
-export default ItemsListItemCard;
+export default observer(ItemsListItemCard);
 
 const styles = StyleSheet.create((theme) => ({
   cardContainer: {
@@ -212,5 +240,13 @@ const styles = StyleSheet.create((theme) => ({
     width: 8,
     height: 8,
     borderRadius: 5,
+    backgroundColor: theme.colors.primary,
+    variants: {
+      color: {
+        true: {
+          backgroundColor: theme.colors.error,
+        },
+      },
+    },
   },
 }));

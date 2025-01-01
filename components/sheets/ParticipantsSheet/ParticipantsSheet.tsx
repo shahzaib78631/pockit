@@ -1,6 +1,6 @@
 import React from "react";
 import { getString } from "@/strings/translations";
-import ParticipantsList from "@/components/lists/ParticipantsList";
+import ParticipantsList from "@/components/lists/UnitsList";
 import BaseBottomActionSheet from "@/components/base/BaseBottomActionSheet";
 import { SheetProps } from "react-native-actions-sheet";
 

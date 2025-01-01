@@ -42,6 +42,7 @@ export default ThemedSegmentedControls;
 const styles = StyleSheet.create((theme) => ({
   segmentedControl: {
     marginBottom: theme.margin.md,
+    marginTop: theme.margin.sm,
     borderWidth: 1,
     borderRadius: 9,
     borderColor: theme.colors.primaryOutline,

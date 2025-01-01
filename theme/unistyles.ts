@@ -77,6 +77,6 @@ StyleSheet.configure({
     "midnightDusk-dark": createTheme(Themes.midnightDusk.dark),
   },
   settings: {
-    initialTheme: "lavender-dark",
+    initialTheme: "default-light",
   },
 });

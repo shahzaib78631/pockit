@@ -1,25 +1,23 @@
 import React from "react";
 import { View } from "react-native";
 
-// TRPC
-import { Participant, Participants } from "@/utils/trpc";
-
 // Context
 import { useThemeContext } from "@/context/ThemeContext";
 
 // Components
 import { ThemedCheckbox, ThemedList, ThemedRadioButton } from "@/components/ui";
+import { Suppliers, Supplier } from "@/types/types";
 
-// Define the prop types for ParticipantsList
-interface ParticipantsListProps {
-  participants: Participants;
-  value: Participant["id"] | Participant["id"][] | null;
-  onChange: (participant: Participant, checked?: boolean) => void;
+// Define the prop types for SuppliersList
+interface SuppliersListProps {
+  suppliers: Supplier[];
+  value: string | string[] | null;
+  onChange: (supplier: Supplier, checked?: boolean) => void;
   multiple?: boolean;
 }
 
-const ParticipantsList: React.FC<ParticipantsListProps> = ({
-  participants,
+const SuppliersList: React.FC<SuppliersListProps> = ({
+  suppliers,
   value,
   onChange,
   multiple,
@@ -31,33 +29,33 @@ const ParticipantsList: React.FC<ParticipantsListProps> = ({
   return (
     <View style={{ height: 500 }}>
       <ThemedList
-        type="flashlist"
-        keyExtractor={({ id }) => String(id)}
-        data={participants}
+        type="flatlist"
+        keyExtractor={({ updated_at, person_id }) =>
+          `${person_id}-${updated_at}`
+        }
+        data={suppliers}
         searchEnabled
         searchConfig={{
-          extractSearchableText: (item: Participant) => item.name,
+          extractSearchableText: (item: Supplier) => item.company_name,
         }}
-        estimatedItemSize={41}
-        extraData={value}
-        renderItem={({ item }: { item: Participant }) => {
+        renderItem={({ item }: { item: Supplier }) => {
           return (
             <Component
               onValueChange={() =>
                 onChange(
                   item,
                   multiple
-                    ? value?.includes(item.id) || false
-                    : value === item.id
+                    ? value?.includes(item.person_id) || false
+                    : value === item.person_id
                 )
               }
               value={
                 Array.isArray(value)
-                  ? value.includes(item.id)
-                  : value === item.id
+                  ? value.includes(item.person_id)
+                  : value === item.person_id
               }
               buttonPosition="right"
-              label={item.name}
+              label={item.company_name}
               style={commonStyles.rowJustifySpaceBetween}
             />
           );
@@ -67,4 +65,4 @@ const ParticipantsList: React.FC<ParticipantsListProps> = ({
   );
 };
 
-export default ParticipantsList;
+export default SuppliersList;

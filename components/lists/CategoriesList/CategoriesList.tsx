@@ -1,88 +1,66 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { View } from "react-native";
-
-// Trpc
-import { Category } from "@/utils/trpc";
 
 // Context
 import { useThemeContext } from "@/context/ThemeContext";
 
-// Styles
-import { StyleSheet } from "react-native-unistyles";
-
 // Components
-import { ThemedText, ThemedList, ThemedRadioButton } from "@/components/ui";
+import { ThemedCheckbox, ThemedList, ThemedRadioButton } from "@/components/ui";
+import { Category, Categories } from "@/types/types";
 
+// Define the prop types for CategoriesList
 interface CategoriesListProps {
-  categories: Category[];
-  value: Category["id"] | null;
-  onChange: (category: Category) => void;
+  categories: Categories;
+  value: string | string[] | null;
+  onChange: (category: Category, checked?: boolean) => void;
+  multiple?: boolean;
 }
 
 const CategoriesList: React.FC<CategoriesListProps> = ({
   categories,
   value,
   onChange,
+  multiple,
 }) => {
   const { commonStyles } = useThemeContext();
 
-  // Organize categories into sections
-  const allSections = useMemo(
-    () =>
-      Object.entries(
-        categories.reduce<Record<string, Category[]>>(
-          (acc, category) => ({
-            ...acc,
-            [category.grouping]: [...(acc[category.grouping] ?? []), category],
-          }),
-          {}
-        )
-      ).map(([group, categories]) => ({
-        title: group,
-        data: categories,
-      })),
-    [categories]
-  );
+  const Component = multiple ? ThemedCheckbox : ThemedRadioButton;
 
   return (
     <View style={{ height: 500 }}>
       <ThemedList
-        type="sectionlist"
-        data={allSections}
-        showsVerticalScrollIndicator={false}
-        initialNumToRender={2}
+        type="flatlist"
+        keyExtractor={({ updated_at, id }) => `${id}-${updated_at}`}
+        data={categories}
         searchEnabled
         searchConfig={{
           extractSearchableText: (item: Category) => item.name,
         }}
-        renderSectionHeader={({ section }) => (
-          <View style={[styles.sectionHeaderContainer]}>
-            <ThemedText fontSize="lg" type="bold" color="secondary">
-              {section.title}
-            </ThemedText>
-          </View>
-        )}
-        renderItem={({ item }: { item: Category }) => (
-          <View>
-            <ThemedRadioButton
-              onValueChange={() => onChange(item)}
-              value={value === item.id}
+        renderItem={({ item }: { item: Category }) => {
+          return (
+            <Component
+              onValueChange={() =>
+                onChange(
+                  item,
+                  multiple
+                    ? value?.includes(item.id) || false
+                    : value === item.id
+                )
+              }
+              value={
+                Array.isArray(value)
+                  ? value.includes(item.id)
+                  : value === item.id
+              }
               buttonPosition="right"
               label={item.name}
-              style={[commonStyles.rowJustifySpaceBetween]}
+              style={commonStyles.rowJustifySpaceBetween}
             />
-          </View>
-        )}
+          );
+        }}
       />
     </View>
   );
 };
-
-const styles = StyleSheet.create((theme) => ({
-  sectionHeaderContainer: {
-    backgroundColor: theme.colors.background,
-    paddingVertical: theme.padding.md,
-  },
-}));
 
 export default CategoriesList;

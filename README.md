@@ -48,3 +48,11 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+## Generate zod schema
+
+bun supabase-to-zod --input ./database/database.types.ts --output ./forms/schemas/schemas.ts
+
+## Generate supabase types
+
+bunx supabase gen types typescript --project-id id-of-your-project > database.types.ts

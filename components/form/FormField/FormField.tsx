@@ -72,7 +72,7 @@ interface PickerFieldPropsBase extends Omit<BaseFormFieldProps, "type"> {
   /** Title for the picker sheet. */
   pickerSheetTitle: string;
   /** Function to format the field value for display. */
-  fieldValue: (value: any) => string | null;
+  fieldValue: (value: any) => string | undefined;
   /** Content to render inside the picker bottom sheet. */
   renderPickerContentComponent?: (
     value: any,
@@ -284,7 +284,7 @@ const FormField = ({
     return (
       <ThemedTextInput
         placeholder={placeholder}
-        value={value}
+        value={value ? value.toString() : ""}
         onChangeText={onChange}
         multiline={multiline}
         inputStyle={inputStyle}
