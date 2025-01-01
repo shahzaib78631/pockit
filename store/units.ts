@@ -24,10 +24,10 @@ export const units$ = observable(
 export const UnitsStore$ = observable({
     units: units$.get(),
     getUnits: () => {
-        return Object.values(UnitsStore$.units.get()) || [];
+        return Object.values(units$.get()) || [];
     },
     getUnit: (id: string) => {
-        return UnitsStore$.units[id]?.get();
+        return units$[id]?.get();
     },
     getUnitName: (id: string) => {
         return UnitsStore$.getUnit(id)?.["name"];

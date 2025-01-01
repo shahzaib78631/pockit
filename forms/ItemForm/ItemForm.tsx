@@ -95,11 +95,12 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
     if (field === "whole_selling_price" || field === "units_per_whole") {
       setValue(
         "unit_selling_price",
-
         getValues("whole_selling_price") / (getValues("units_per_whole") || 1)
       );
     }
   };
+
+  console.log("ItemForm -> errors", errors);
 
   return (
     <View style={[commonStyles.gapLg, commonStyles.marginBottomXxl]}>

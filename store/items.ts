@@ -9,7 +9,7 @@ const options$ = observable({
     search: "",
     searchFields: ["name"],
     sort: "created_at",
-    fields: ["*", "inventory(whole_count, unit_count)"],
+    fields: ["*"],
     page: 1,        // Pagination: Current page
     limit: 2,      // Pagination: Number of items per page
     getAll: true,  // Flag to fetch all items
@@ -30,12 +30,13 @@ export const itemsTable$ = observable(
             getAll: options$.get().getAll,
         });
     },
+    actions: ["read", "create", "update", "delete"],
       realtime: true,
       // Sync only diffs
-      changesSince: 'last-sync',
+      changesSince: 'all',
       // Persist data and pending changes locally
       persist: {
-        name: 'poko',
+        name: 'life',
         retrySync: true, // Persist pending changes and retry
       },
       retry: {
@@ -50,11 +51,11 @@ export const itemsTable$ = observable(
 export const items$ = observable<Record<string, Item>>({}); // Initialize as an empty array for "load more"
 
 export const ItemsStore$ = observable({
-    items: items$.get(),
+    items: itemsTable$.get(),
     options: options$.get(),
     getItems: () => {
-        items$.set((prev) => ({ ...prev, ...itemsTable$.get() }));
-        return Object.values(items$.get()) || [];
+        // items$.set((prev) => ({ ...prev, ...itemsTable$.get() }));
+        return Object.values(itemsTable$.get()) || [];
     },
     getItem: (id: string) => {
         return items$.get()?.[id]

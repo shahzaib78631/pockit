@@ -1,35 +1,33 @@
 import { customSynced , supabase} from "@/database/SupaLegend";
 import { observable } from "@legendapp/state";
 
-export const categories$ = observable(
+export const inventoryTable$ = observable(
     customSynced({
       supabase,
-      collection: "categories",
+      collection: "inventory",
       select: (from) => from.select("*"),
       actions: ["read", "create", "update", "delete"],
-      initial: Object(),
        // Persist data and pending changes locally
       persist: {
-        name: 'categories',
+        name: 'inventory',
         retrySync: true, // Persist pending changes and retry
       },
       retry: {
         infinite: true, // Retry changes with exponential backoff
       },
+      realtime: true,
+      fieldId: "item_id",
       // Sync only diffs
       changesSince: 'last-sync',
     })
   );
 
-export const CategoriesStore$ = observable({
-    categories: categories$.get(),
-    getCategories: () => {
-        return Object.values(categories$.get()) || [];
+export const InventoryStore$ = observable({
+    inventory: inventoryTable$.get(),
+    getInventoryItems: () => {
+        return Object.values(inventoryTable$.get()) || [];
     },
-    getCategory: (id: string) => {
-        return categories$[id]?.get();
-    },
-    getCategoryName: (id: string) => {
-        return CategoriesStore$.getCategory(id)?.["name"];
+    getInventoryItem: (id: string) => {
+        return inventoryTable$?.[id]?.get()
     },
 });

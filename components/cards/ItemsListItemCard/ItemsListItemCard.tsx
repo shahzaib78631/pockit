@@ -66,6 +66,8 @@ const ItemsListItemCard = ({
 }) => {
   const { store$ } = useAppContext();
 
+  const inventoryItem = store$.InventoryStore.getInventoryItem(item.id);
+
   const getBuyingPrice = useMemo(() => {
     if (item?.selling_type === "whole") {
       return formatCurrency("$", item?.whole_buying_price || 0);
@@ -84,12 +86,12 @@ const ItemsListItemCard = ({
 
   const getAvailableStock = useMemo(() => {
     if (item?.selling_type === "whole") {
-      return item?.inventory?.[0]?.whole_count || 0;
+      return inventoryItem?.whole_count || 0;
     }
     if (item?.selling_type === "unit") {
-      return item?.inventory?.[0]?.unit_count || 0;
+      return inventoryItem?.unit_count || 0;
     }
-  }, [item]);
+  }, [item, inventoryItem?.updated_at]);
 
   styles.useVariants({
     color: getAvailableStock === 0,

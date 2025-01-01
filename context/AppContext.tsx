@@ -1,4 +1,5 @@
 import { CategoriesStore$ } from "@/store/categories";
+import { InventoryStore$ } from "@/store/inventory";
 import { ItemsStore$ } from "@/store/items";
 import { SuppliersStore$ } from "@/store/suppliers";
 import { UnitsStore$ } from "@/store/units";
@@ -18,6 +19,7 @@ const store$ = observable({
   CategoriesStore: CategoriesStore$,
   SuppliersStore: SuppliersStore$,
   ItemsStore: ItemsStore$,
+  InventoryStore: InventoryStore$,
 });
 
 // Define the interface for the context's value

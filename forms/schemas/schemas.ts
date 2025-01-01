@@ -6,7 +6,7 @@ export const jsonSchema: z.ZodSchema<Json> = z.lazy(() =>
   z
     .union([
       z.string(),
-      z.number(),
+      z.coerce.number(),
       z.boolean(),
       z.record(z.union([jsonSchema, z.undefined()])),
       z.array(jsonSchema),
@@ -46,9 +46,9 @@ export const inventoryRowSchema = z.object({
   id: z.string(),
   item_id: z.string(),
   location_id: z.string().nullable(),
-  unit_count: z.number(),
+  unit_count: z.coerce.number(),
   updated_at: z.string(),
-  whole_count: z.number(),
+  whole_count: z.coerce.number(),
 });
 
 export const inventoryInsertSchema = z.object({
@@ -57,9 +57,9 @@ export const inventoryInsertSchema = z.object({
   id: z.string().optional(),
   item_id: z.string(),
   location_id: z.string().optional().nullable(),
-  unit_count: z.number().optional(),
+  unit_count: z.coerce.number().optional(),
   updated_at: z.string().optional(),
-  whole_count: z.number().optional(),
+  whole_count: z.coerce.number().optional(),
 });
 
 export const inventoryUpdateSchema = z.object({
@@ -68,9 +68,9 @@ export const inventoryUpdateSchema = z.object({
   id: z.string().optional(),
   item_id: z.string().optional(),
   location_id: z.string().optional().nullable(),
-  unit_count: z.number().optional(),
+  unit_count: z.coerce.number().optional(),
   updated_at: z.string().optional(),
-  whole_count: z.number().optional(),
+  whole_count: z.coerce.number().optional(),
 });
 
 export const inventoryRelationshipsSchema = z.tuple([
@@ -102,12 +102,12 @@ export const itemsRowSchema = z.object({
   sku: z.string(),
   sub_unit_id: z.string().nullable(),
   supplier_id: z.string().nullable(),
-  unit_buying_price: z.number(),
-  unit_selling_price: z.number(),
-  units_per_whole: z.number(),
+  unit_buying_price: z.coerce.number(),
+  unit_selling_price: z.coerce.number(),
+  units_per_whole: z.coerce.number(),
   updated_at: z.string(),
-  whole_buying_price: z.number(),
-  whole_selling_price: z.number(),
+  whole_buying_price: z.coerce.number(),
+  whole_selling_price: z.coerce.number(),
   whole_unit_id: z.string().nullable(),
 });
 
@@ -123,12 +123,12 @@ export const itemsInsertSchema = z.object({
   sku: z.string(),
   sub_unit_id: z.string().optional().nullable(),
   supplier_id: z.string().optional().nullable(),
-  unit_buying_price: z.number().optional(),
-  unit_selling_price: z.number().optional(),
-  units_per_whole: z.number().optional(),
+  unit_buying_price: z.coerce.number().optional(),
+  unit_selling_price: z.coerce.number().optional(),
+  units_per_whole: z.coerce.number().optional(),
   updated_at: z.string().optional(),
-  whole_buying_price: z.number().optional(),
-  whole_selling_price: z.number().optional(),
+  whole_buying_price: z.coerce.number().optional(),
+  whole_selling_price: z.coerce.number().optional(),
   whole_unit_id: z.string().optional().nullable(),
 });
 
@@ -144,12 +144,12 @@ export const itemsUpdateSchema = z.object({
   sku: z.string().optional(),
   sub_unit_id: z.string().optional().nullable(),
   supplier_id: z.string().optional().nullable(),
-  unit_buying_price: z.number().optional(),
-  unit_selling_price: z.number().optional(),
-  units_per_whole: z.number().optional(),
+  unit_buying_price: z.coerce.number().optional(),
+  unit_selling_price: z.coerce.number().optional(),
+  units_per_whole: z.coerce.number().optional(),
   updated_at: z.string().optional(),
-  whole_buying_price: z.number().optional(),
-  whole_selling_price: z.number().optional(),
+  whole_buying_price: z.coerce.number().optional(),
+  whole_selling_price: z.coerce.number().optional(),
   whole_unit_id: z.string().optional().nullable(),
 });
 
@@ -223,7 +223,7 @@ export const peopleRowSchema = z.object({
   deleted: z.boolean(),
   email: z.string(),
   first_name: z.string(),
-  gender: z.number().nullable(),
+  gender: z.coerce.number().nullable(),
   id: z.string(),
   last_name: z.string(),
   phone_number: z.string(),
@@ -242,7 +242,7 @@ export const peopleInsertSchema = z.object({
   deleted: z.boolean().optional(),
   email: z.string(),
   first_name: z.string(),
-  gender: z.number().optional().nullable(),
+  gender: z.coerce.number().optional().nullable(),
   id: z.string().optional(),
   last_name: z.string(),
   phone_number: z.string(),
@@ -261,7 +261,7 @@ export const peopleUpdateSchema = z.object({
   deleted: z.boolean().optional(),
   email: z.string().optional(),
   first_name: z.string().optional(),
-  gender: z.number().optional().nullable(),
+  gender: z.coerce.number().optional().nullable(),
   id: z.string().optional(),
   last_name: z.string().optional(),
   phone_number: z.string().optional(),
