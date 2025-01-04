@@ -7,21 +7,16 @@ import { useThemeContext } from "@/context/ThemeContext";
 // Components
 import { ThemedCheckbox, ThemedList, ThemedRadioButton } from "@/components/ui";
 import { Unit, Units } from "@/types/types";
+import { unitsTable$ } from "@/store/units";
 
 // Define the prop types for UnitsList
 interface UnitsListProps {
-  units: Units;
   value: string | string[] | null;
   onChange: (unit: Unit, checked?: boolean) => void;
   multiple?: boolean;
 }
 
-const UnitsList: React.FC<UnitsListProps> = ({
-  units,
-  value,
-  onChange,
-  multiple,
-}) => {
+const UnitsList: React.FC<UnitsListProps> = ({ value, onChange, multiple }) => {
   const { commonStyles } = useThemeContext();
 
   const Component = multiple ? ThemedCheckbox : ThemedRadioButton;
@@ -31,7 +26,7 @@ const UnitsList: React.FC<UnitsListProps> = ({
       <ThemedList
         type="flatlist"
         keyExtractor={({ updated_at, id }) => `${id}-${updated_at}`}
-        data={units}
+        data={Object.values(unitsTable$.get())}
         searchEnabled
         searchConfig={{
           extractSearchableText: (item: Unit) => item.name,

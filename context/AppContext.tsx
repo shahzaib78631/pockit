@@ -17,9 +17,7 @@ interface AppProviderProps {
 const store$ = observable({
   UnitsStore: UnitsStore$,
   CategoriesStore: CategoriesStore$,
-  SuppliersStore: SuppliersStore$,
   ItemsStore: ItemsStore$,
-  InventoryStore: InventoryStore$,
 });
 
 // Define the interface for the context's value

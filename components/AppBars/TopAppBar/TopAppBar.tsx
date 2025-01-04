@@ -23,8 +23,6 @@ import { useThemeContext } from "@/context/ThemeContext";
 
 // Translation
 import { withUnistyles } from "react-native-unistyles";
-import FabMenu from "@/components/FabMenu";
-import { ThemedMaterialCommunityIcons } from "@/components/ui/ThemedIcons";
 
 // Create a typed MaterialTopTabs navigator
 const { Navigator } = createMaterialTopTabNavigator();
@@ -48,7 +46,7 @@ const ThemedMaterialTopTabs = withUnistyles(MaterialTopTabs, (theme) => ({
       elevation: 0,
     },
     tabBarLabelStyle: {
-      fontFamily: theme.fontFamily.regular,
+      fontFamily: theme.fontFamily.semiBold,
       fontSize: theme.fontSize.sm,
     },
     tabBarActiveTintColor: theme.colors.primary,
@@ -105,6 +103,7 @@ export default function TopAppBar({
       title={title}
       size={size}
       goBackEnabled={goBackEnabled}
+      withBottomTabs={true}
     >
       {/* Tabs */}
       <ThemedMaterialTopTabs

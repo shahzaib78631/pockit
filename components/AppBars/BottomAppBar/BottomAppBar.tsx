@@ -19,7 +19,7 @@ interface BottomAppBarProps extends BottomTabBarProps {
 }
 
 // Allowed route names
-const allowedRoutes = ["index", "items", "(transactions)", "settings"];
+const allowedRoutes = ["index", "(inventory)", "(transactions)", "settings"];
 
 const TAB_WIDTH = Dimensions.get("window").width / allowedRoutes.length;
 
@@ -77,16 +77,17 @@ const BottomAppBar: React.FC<BottomAppBarProps> = ({
                     <ThemedText
                       color={isFocused ? "primary" : "outline"}
                       fontSize="xs"
+                      type="semiBold"
                     >
                       {getString(`screen.home.title`)}
                     </ThemedText>
                   </>
                 );
-              case "items":
+              case "(inventory)":
                 return (
                   <>
                     <ThemedMaterialIcons
-                      name="history"
+                      name="folder"
                       size={iconSize}
                       color={
                         isFocused ? theme.colors.primary : theme.colors.outline
@@ -95,8 +96,9 @@ const BottomAppBar: React.FC<BottomAppBarProps> = ({
                     <ThemedText
                       color={isFocused ? "primary" : "outline"}
                       fontSize="xs"
+                      type="semiBold"
                     >
-                      {getString(`screen.items.title`)}
+                      {getString(`screen.inventory.title`)}
                     </ThemedText>
                   </>
                 );
@@ -113,6 +115,7 @@ const BottomAppBar: React.FC<BottomAppBarProps> = ({
                     <ThemedText
                       color={isFocused ? "primary" : "outline"}
                       fontSize="xs"
+                      type="semiBold"
                     >
                       {getString(`screen.transactions.title`)}
                     </ThemedText>
@@ -131,6 +134,7 @@ const BottomAppBar: React.FC<BottomAppBarProps> = ({
                     <ThemedText
                       color={isFocused ? "primary" : "outline"}
                       fontSize="xs"
+                      type="semiBold"
                     >
                       {getString(`screen.settings.title`)}
                     </ThemedText>

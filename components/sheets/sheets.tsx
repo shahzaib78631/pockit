@@ -2,46 +2,54 @@ import { registerSheet, SheetDefinition } from "react-native-actions-sheet";
 
 // Sheets
 import {
-  AddGroupByUrlSheet,
+  AddCategorySheet,
   CategoriesSheet,
-  ShareGroupUrlSheet,
-  ParticipantsSheet,
-  ParticipantDeleteInfoSheet,
+  UnitsSheet,
+  FormFieldPickerSheet,
+  AddUnitSheet,
 } from "./";
+import { Categories, Category, Unit } from "@/types/types";
+import { PickerFieldProps } from "../form/FormField/FormField";
+import { ReactNode } from "react";
 
-import { Category, Participant, Participants } from "@/utils/trpc";
-
-registerSheet("AddGroupByUrlSheet", AddGroupByUrlSheet);
+registerSheet("AddCategorySheet", AddCategorySheet);
+registerSheet("AddUnitSheet", AddUnitSheet);
 registerSheet("CategoriesSheet", CategoriesSheet);
-registerSheet("ShareGroupUrlSheet", ShareGroupUrlSheet);
-registerSheet("ParticipantsSheet", ParticipantsSheet);
-registerSheet("ParticipantDeleteInfoSheet", ParticipantDeleteInfoSheet);
+registerSheet("UnitsSheet", UnitsSheet);
+registerSheet("FormFieldPicker", FormFieldPickerSheet);
 
 // We extend some of the types here to give us great intellisense
 // across the app for all registered sheets.
 declare module "react-native-actions-sheet" {
   interface Sheets {
-    AddGroupByUrlSheet: SheetDefinition;
-    ParticipantDeleteInfoSheet: SheetDefinition;
-
-    ShareGroupUrlSheet: SheetDefinition<{
+    AddCategorySheet: SheetDefinition<{
       payload: {
-        groupId: string;
+        onChange: (category: Category) => void;
+      };
+    }>;
+    AddUnitSheet: SheetDefinition<{
+      payload: {
+        onChange: (unit: Unit) => void;
       };
     }>;
     CategoriesSheet: SheetDefinition<{
       payload: {
-        categories: Category[];
         value: Category["id"] | null;
         onChange: (category: Category) => void;
       };
     }>;
-    ParticipantsSheet: SheetDefinition<{
+    UnitsSheet: SheetDefinition<{
       payload: {
-        participants: Participants;
-        value: Participant["id"] | Participant["id"][] | null;
+        value: Unit["id"] | Unit["id"][] | null;
+        onChange: (unit: Unit, checked?: boolean) => void;
         multiple?: boolean;
-        onChange: (participant: Participant, checked?: boolean) => void;
+      };
+    }>;
+    FormFieldPicker: SheetDefinition<{
+      payload: {
+        children: ReactNode;
+        pickerSheetTitle: string;
+        renderRightAction: (() => React.JSX.Element) | undefined;
       };
     }>;
   }

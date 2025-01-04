@@ -17,6 +17,7 @@ export const jsonSchema: z.ZodSchema<Json> = z.lazy(() =>
 export const categoriesRowSchema = z.object({
   created_at: z.string(),
   deleted: z.boolean(),
+  description: z.string().nullable(),
   id: z.string(),
   name: z.string(),
   updated_at: z.string(),
@@ -25,6 +26,7 @@ export const categoriesRowSchema = z.object({
 export const categoriesInsertSchema = z.object({
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
+  description: z.string().optional().nullable(),
   id: z.string().optional(),
   name: z.string(),
   updated_at: z.string().optional(),
@@ -33,6 +35,7 @@ export const categoriesInsertSchema = z.object({
 export const categoriesUpdateSchema = z.object({
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
+  description: z.string().optional().nullable(),
   id: z.string().optional(),
   name: z.string().optional(),
   updated_at: z.string().optional(),
@@ -41,39 +44,49 @@ export const categoriesUpdateSchema = z.object({
 export const categoriesRelationshipsSchema = z.tuple([]);
 
 export const inventoryRowSchema = z.object({
+  change_type: z.string().nullable(),
   created_at: z.string(),
-  deleted: z.boolean(),
+  created_by: z.string().nullable(),
   id: z.string(),
   item_id: z.string(),
   location_id: z.string().nullable(),
-  unit_count: z.coerce.number(),
-  updated_at: z.string(),
-  whole_count: z.coerce.number(),
+  quantity: z.coerce.number(),
+  reason: z.string().nullable(),
+  unit_id: z.string().nullable(),
 });
 
 export const inventoryInsertSchema = z.object({
+  change_type: z.string().optional().nullable(),
   created_at: z.string().optional(),
-  deleted: z.boolean().optional(),
+  created_by: z.string().optional().nullable(),
   id: z.string().optional(),
   item_id: z.string(),
   location_id: z.string().optional().nullable(),
-  unit_count: z.coerce.number().optional(),
-  updated_at: z.string().optional(),
-  whole_count: z.coerce.number().optional(),
+  quantity: z.coerce.number().optional(),
+  reason: z.string().optional().nullable(),
+  unit_id: z.string().optional().nullable(),
 });
 
 export const inventoryUpdateSchema = z.object({
+  change_type: z.string().optional().nullable(),
   created_at: z.string().optional(),
-  deleted: z.boolean().optional(),
+  created_by: z.string().optional().nullable(),
   id: z.string().optional(),
   item_id: z.string().optional(),
   location_id: z.string().optional().nullable(),
-  unit_count: z.coerce.number().optional(),
-  updated_at: z.string().optional(),
-  whole_count: z.coerce.number().optional(),
+  quantity: z.coerce.number().optional(),
+  reason: z.string().optional().nullable(),
+  unit_id: z.string().optional().nullable(),
 });
 
 export const inventoryRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("inventory_created_by_fkey"),
+    columns: z.tuple([z.literal("created_by")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("people"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
   z.object({
     foreignKeyName: z.literal("inventory_item_id_fkey"),
     columns: z.tuple([z.literal("item_id")]),
@@ -88,6 +101,120 @@ export const inventoryRelationshipsSchema = z.tuple([
     referencedRelation: z.literal("locations"),
     referencedColumns: z.tuple([z.literal("id")]),
   }),
+  z.object({
+    foreignKeyName: z.literal("inventory_unit_id_fkey"),
+    columns: z.tuple([z.literal("unit_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("units"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+]);
+
+export const itemPricesRowSchema = z.object({
+  buying_price: z.coerce.number().nullable(),
+  created_at: z.string(),
+  deleted: z.boolean(),
+  id: z.string(),
+  item_id: z.string().nullable(),
+  price_list_id: z.string().nullable(),
+  selling_price: z.coerce.number().nullable(),
+  unit_id: z.string().nullable(),
+  updated_at: z.string(),
+});
+
+export const itemPricesInsertSchema = z.object({
+  buying_price: z.coerce.number().optional().nullable(),
+  created_at: z.string().optional(),
+  deleted: z.boolean().optional(),
+  id: z.string().optional(),
+  item_id: z.string().optional().nullable(),
+  price_list_id: z.string().optional().nullable(),
+  selling_price: z.coerce.number().optional().nullable(),
+  unit_id: z.string().optional().nullable(),
+  updated_at: z.string().optional(),
+});
+
+export const itemPricesUpdateSchema = z.object({
+  buying_price: z.coerce.number().optional().nullable(),
+  created_at: z.string().optional(),
+  deleted: z.boolean().optional(),
+  id: z.string().optional(),
+  item_id: z.string().optional().nullable(),
+  price_list_id: z.string().optional().nullable(),
+  selling_price: z.coerce.number().optional().nullable(),
+  unit_id: z.string().optional().nullable(),
+  updated_at: z.string().optional(),
+});
+
+export const itemPricesRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("item_prices_item_id_fkey"),
+    columns: z.tuple([z.literal("item_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("items"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+  z.object({
+    foreignKeyName: z.literal("item_prices_price_list_id_fkey"),
+    columns: z.tuple([z.literal("price_list_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("price_lists"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+  z.object({
+    foreignKeyName: z.literal("item_prices_unit_id_fkey"),
+    columns: z.tuple([z.literal("unit_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("units"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+]);
+
+export const itemUnitsRowSchema = z.object({
+  created_at: z.string(),
+  deleted: z.boolean(),
+  id: z.string(),
+  is_primary: z.boolean().nullable(),
+  item_id: z.string().nullable(),
+  unit_id: z.string().nullable(),
+  updated_at: z.string(),
+});
+
+export const itemUnitsInsertSchema = z.object({
+  created_at: z.string().optional(),
+  deleted: z.boolean().optional(),
+  id: z.string().optional(),
+  is_primary: z.boolean().optional().nullable(),
+  item_id: z.string().optional().nullable(),
+  unit_id: z.string().optional().nullable(),
+  updated_at: z.string().optional(),
+});
+
+export const itemUnitsUpdateSchema = z.object({
+  created_at: z.string().optional(),
+  deleted: z.boolean().optional(),
+  id: z.string().optional(),
+  is_primary: z.boolean().optional().nullable(),
+  item_id: z.string().optional().nullable(),
+  unit_id: z.string().optional().nullable(),
+  updated_at: z.string().optional(),
+});
+
+export const itemUnitsRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("item_units_item_id_fkey"),
+    columns: z.tuple([z.literal("item_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("items"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+  z.object({
+    foreignKeyName: z.literal("item_units_unit_id_fkey"),
+    columns: z.tuple([z.literal("unit_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("units"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
 ]);
 
 export const itemsRowSchema = z.object({
@@ -96,19 +223,23 @@ export const itemsRowSchema = z.object({
   created_at: z.string(),
   deleted: z.boolean(),
   id: z.string(),
-  is_active: z.boolean(),
+  image_url: z.string().nullable(),
   name: z.string(),
-  selling_type: z.string(),
   sku: z.string(),
-  sub_unit_id: z.string().nullable(),
-  supplier_id: z.string().nullable(),
-  unit_buying_price: z.coerce.number(),
-  unit_selling_price: z.coerce.number(),
-  units_per_whole: z.coerce.number(),
   updated_at: z.string(),
-  whole_buying_price: z.coerce.number(),
-  whole_selling_price: z.coerce.number(),
-  whole_unit_id: z.string().nullable(),
+  units: z.array(itemUnitsInsertSchema).optional()
+});
+
+export const itemsFormSchema = z.object({
+  barcode: z.string().nullable(),
+  category_id: z.string().nullable(),
+  created_at: z.string(),
+  deleted: z.boolean(),
+  id: z.string(),
+  image_url: z.string().nullable(),
+  name: z.string(),
+  sku: z.string(),
+  updated_at: z.string(),
 });
 
 export const itemsInsertSchema = z.object({
@@ -117,19 +248,10 @@ export const itemsInsertSchema = z.object({
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
   id: z.string().optional(),
-  is_active: z.boolean().optional(),
+  image_url: z.string().optional().nullable(),
   name: z.string(),
-  selling_type: z.string().optional(),
   sku: z.string(),
-  sub_unit_id: z.string().optional().nullable(),
-  supplier_id: z.string().optional().nullable(),
-  unit_buying_price: z.coerce.number().optional(),
-  unit_selling_price: z.coerce.number().optional(),
-  units_per_whole: z.coerce.number().optional(),
   updated_at: z.string().optional(),
-  whole_buying_price: z.coerce.number().optional(),
-  whole_selling_price: z.coerce.number().optional(),
-  whole_unit_id: z.string().optional().nullable(),
 });
 
 export const itemsUpdateSchema = z.object({
@@ -138,19 +260,10 @@ export const itemsUpdateSchema = z.object({
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
   id: z.string().optional(),
-  is_active: z.boolean().optional(),
+  image_url: z.string().optional().nullable(),
   name: z.string().optional(),
-  selling_type: z.string().optional(),
   sku: z.string().optional(),
-  sub_unit_id: z.string().optional().nullable(),
-  supplier_id: z.string().optional().nullable(),
-  unit_buying_price: z.coerce.number().optional(),
-  unit_selling_price: z.coerce.number().optional(),
-  units_per_whole: z.coerce.number().optional(),
   updated_at: z.string().optional(),
-  whole_buying_price: z.coerce.number().optional(),
-  whole_selling_price: z.coerce.number().optional(),
-  whole_unit_id: z.string().optional().nullable(),
 });
 
 export const itemsRelationshipsSchema = z.tuple([
@@ -159,27 +272,6 @@ export const itemsRelationshipsSchema = z.tuple([
     columns: z.tuple([z.literal("category_id")]),
     isOneToOne: z.literal(false),
     referencedRelation: z.literal("categories"),
-    referencedColumns: z.tuple([z.literal("id")]),
-  }),
-  z.object({
-    foreignKeyName: z.literal("items_sub_unit_id_fkey"),
-    columns: z.tuple([z.literal("sub_unit_id")]),
-    isOneToOne: z.literal(false),
-    referencedRelation: z.literal("units"),
-    referencedColumns: z.tuple([z.literal("id")]),
-  }),
-  z.object({
-    foreignKeyName: z.literal("items_supplier_id_fkey"),
-    columns: z.tuple([z.literal("supplier_id")]),
-    isOneToOne: z.literal(false),
-    referencedRelation: z.literal("suppliers"),
-    referencedColumns: z.tuple([z.literal("person_id")]),
-  }),
-  z.object({
-    foreignKeyName: z.literal("items_whole_unit_id_fkey"),
-    columns: z.tuple([z.literal("whole_unit_id")]),
-    isOneToOne: z.literal(false),
-    referencedRelation: z.literal("units"),
     referencedColumns: z.tuple([z.literal("id")]),
   }),
 ]);
@@ -213,9 +305,125 @@ export const locationsUpdateSchema = z.object({
 
 export const locationsRelationshipsSchema = z.tuple([]);
 
+export const orderItemsRowSchema = z.object({
+  created_at: z.string(),
+  deleted: z.boolean(),
+  discount: z.coerce.number().nullable(),
+  id: z.string(),
+  item_id: z.string().nullable(),
+  order_id: z.string().nullable(),
+  quantity: z.coerce.number(),
+  unit_id: z.string().nullable(),
+  unit_price: z.coerce.number(),
+  updated_at: z.string(),
+});
+
+export const orderItemsInsertSchema = z.object({
+  created_at: z.string().optional(),
+  deleted: z.boolean().optional(),
+  discount: z.coerce.number().optional().nullable(),
+  id: z.string().optional(),
+  item_id: z.string().optional().nullable(),
+  order_id: z.string().optional().nullable(),
+  quantity: z.coerce.number(),
+  unit_id: z.string().optional().nullable(),
+  unit_price: z.coerce.number(),
+  updated_at: z.string().optional(),
+});
+
+export const orderItemsUpdateSchema = z.object({
+  created_at: z.string().optional(),
+  deleted: z.boolean().optional(),
+  discount: z.coerce.number().optional().nullable(),
+  id: z.string().optional(),
+  item_id: z.string().optional().nullable(),
+  order_id: z.string().optional().nullable(),
+  quantity: z.coerce.number().optional(),
+  unit_id: z.string().optional().nullable(),
+  unit_price: z.coerce.number().optional(),
+  updated_at: z.string().optional(),
+});
+
+export const orderItemsRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("order_items_item_id_fkey"),
+    columns: z.tuple([z.literal("item_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("items"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+  z.object({
+    foreignKeyName: z.literal("order_items_order_id_fkey"),
+    columns: z.tuple([z.literal("order_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("orders"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+  z.object({
+    foreignKeyName: z.literal("order_items_unit_id_fkey"),
+    columns: z.tuple([z.literal("unit_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("units"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+]);
+
+export const ordersRowSchema = z.object({
+  created_at: z.string(),
+  customer_id: z.string().nullable(),
+  deleted: z.boolean(),
+  id: z.string(),
+  order_date: z.string(),
+  order_type: z.string(),
+  status: z.string().nullable(),
+  supplier_id: z.string().nullable(),
+  updated_at: z.string(),
+});
+
+export const ordersInsertSchema = z.object({
+  created_at: z.string().optional(),
+  customer_id: z.string().optional().nullable(),
+  deleted: z.boolean().optional(),
+  id: z.string().optional(),
+  order_date: z.string().optional(),
+  order_type: z.string(),
+  status: z.string().optional().nullable(),
+  supplier_id: z.string().optional().nullable(),
+  updated_at: z.string().optional(),
+});
+
+export const ordersUpdateSchema = z.object({
+  created_at: z.string().optional(),
+  customer_id: z.string().optional().nullable(),
+  deleted: z.boolean().optional(),
+  id: z.string().optional(),
+  order_date: z.string().optional(),
+  order_type: z.string().optional(),
+  status: z.string().optional().nullable(),
+  supplier_id: z.string().optional().nullable(),
+  updated_at: z.string().optional(),
+});
+
+export const ordersRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("orders_customer_id_fkey"),
+    columns: z.tuple([z.literal("customer_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("people"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+  z.object({
+    foreignKeyName: z.literal("orders_supplier_id_fkey"),
+    columns: z.tuple([z.literal("supplier_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("people"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+]);
+
 export const peopleRowSchema = z.object({
   address1: z.string(),
-  address2: z.string(),
+  address2: z.string().nullable(),
   city: z.string(),
   comments: z.string().nullable(),
   country: z.string(),
@@ -227,14 +435,14 @@ export const peopleRowSchema = z.object({
   id: z.string(),
   last_name: z.string(),
   phone_number: z.string(),
-  state: z.string(),
+  state: z.string().nullable(),
   updated_at: z.string(),
-  zip: z.string(),
+  zip: z.string().nullable(),
 });
 
 export const peopleInsertSchema = z.object({
   address1: z.string(),
-  address2: z.string(),
+  address2: z.string().optional().nullable(),
   city: z.string(),
   comments: z.string().optional().nullable(),
   country: z.string(),
@@ -246,14 +454,14 @@ export const peopleInsertSchema = z.object({
   id: z.string().optional(),
   last_name: z.string(),
   phone_number: z.string(),
-  state: z.string(),
+  state: z.string().optional().nullable(),
   updated_at: z.string().optional(),
-  zip: z.string(),
+  zip: z.string().optional().nullable(),
 });
 
 export const peopleUpdateSchema = z.object({
   address1: z.string().optional(),
-  address2: z.string().optional(),
+  address2: z.string().optional().nullable(),
   city: z.string().optional(),
   comments: z.string().optional().nullable(),
   country: z.string().optional(),
@@ -265,54 +473,128 @@ export const peopleUpdateSchema = z.object({
   id: z.string().optional(),
   last_name: z.string().optional(),
   phone_number: z.string().optional(),
-  state: z.string().optional(),
+  state: z.string().optional().nullable(),
   updated_at: z.string().optional(),
-  zip: z.string().optional(),
+  zip: z.string().optional().nullable(),
 });
 
 export const peopleRelationshipsSchema = z.tuple([]);
 
-export const suppliersRowSchema = z.object({
-  account_number: z.string().nullable(),
-  agency_name: z.string(),
-  company_name: z.string(),
+export const personRolesRowSchema = z.object({
   created_at: z.string(),
   deleted: z.boolean(),
-  person_id: z.string(),
+  id: z.string(),
+  person_id: z.string().nullable(),
+  role: z.string(),
   updated_at: z.string(),
 });
 
-export const suppliersInsertSchema = z.object({
-  account_number: z.string().optional().nullable(),
-  agency_name: z.string(),
-  company_name: z.string(),
+export const personRolesInsertSchema = z.object({
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
-  person_id: z.string(),
+  id: z.string().optional(),
+  person_id: z.string().optional().nullable(),
+  role: z.string(),
   updated_at: z.string().optional(),
 });
 
-export const suppliersUpdateSchema = z.object({
-  account_number: z.string().optional().nullable(),
-  agency_name: z.string().optional(),
-  company_name: z.string().optional(),
+export const personRolesUpdateSchema = z.object({
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
-  person_id: z.string().optional(),
+  id: z.string().optional(),
+  person_id: z.string().optional().nullable(),
+  role: z.string().optional(),
   updated_at: z.string().optional(),
 });
 
-export const suppliersRelationshipsSchema = z.tuple([
+export const personRolesRelationshipsSchema = z.tuple([
   z.object({
-    foreignKeyName: z.literal("suppliers_person_id_fkey"),
+    foreignKeyName: z.literal("person_roles_person_id_fkey"),
     columns: z.tuple([z.literal("person_id")]),
-    isOneToOne: z.literal(true),
+    isOneToOne: z.literal(false),
     referencedRelation: z.literal("people"),
     referencedColumns: z.tuple([z.literal("id")]),
   }),
 ]);
 
+export const priceListsRowSchema = z.object({
+  created_at: z.string(),
+  deleted: z.boolean(),
+  description: z.string().nullable(),
+  id: z.string(),
+  name: z.string(),
+  updated_at: z.string(),
+});
+
+export const priceListsInsertSchema = z.object({
+  created_at: z.string().optional(),
+  deleted: z.boolean().optional(),
+  description: z.string().optional().nullable(),
+  id: z.string().optional(),
+  name: z.string(),
+  updated_at: z.string().optional(),
+});
+
+export const priceListsUpdateSchema = z.object({
+  created_at: z.string().optional(),
+  deleted: z.boolean().optional(),
+  description: z.string().optional().nullable(),
+  id: z.string().optional(),
+  name: z.string().optional(),
+  updated_at: z.string().optional(),
+});
+
+export const priceListsRelationshipsSchema = z.tuple([]);
+
+export const unitConversionsRowSchema = z.object({
+  base_unit_id: z.string().nullable(),
+  conversion_factor: z.coerce.number(),
+  created_at: z.string(),
+  deleted: z.boolean(),
+  id: z.string(),
+  unit_id: z.string().nullable(),
+  updated_at: z.string(),
+});
+
+export const unitConversionsInsertSchema = z.object({
+  base_unit_id: z.string().optional().nullable(),
+  conversion_factor: z.coerce.number(),
+  created_at: z.string().optional(),
+  deleted: z.boolean().optional(),
+  id: z.string().optional(),
+  unit_id: z.string().optional().nullable(),
+  updated_at: z.string().optional(),
+});
+
+export const unitConversionsUpdateSchema = z.object({
+  base_unit_id: z.string().optional().nullable(),
+  conversion_factor: z.coerce.number().optional(),
+  created_at: z.string().optional(),
+  deleted: z.boolean().optional(),
+  id: z.string().optional(),
+  unit_id: z.string().optional().nullable(),
+  updated_at: z.string().optional(),
+});
+
+export const unitConversionsRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("unit_conversions_base_unit_id_fkey"),
+    columns: z.tuple([z.literal("base_unit_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("units"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+  z.object({
+    foreignKeyName: z.literal("unit_conversions_unit_id_fkey"),
+    columns: z.tuple([z.literal("unit_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("units"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+]);
+
 export const unitsRowSchema = z.object({
+  base_unit: z.boolean().nullable(),
   created_at: z.string(),
   deleted: z.boolean(),
   id: z.string(),
@@ -322,6 +604,7 @@ export const unitsRowSchema = z.object({
 });
 
 export const unitsInsertSchema = z.object({
+  base_unit: z.boolean().optional().nullable(),
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
   id: z.string().optional(),
@@ -331,6 +614,7 @@ export const unitsInsertSchema = z.object({
 });
 
 export const unitsUpdateSchema = z.object({
+  base_unit: z.boolean().optional().nullable(),
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
   id: z.string().optional(),
@@ -340,3 +624,83 @@ export const unitsUpdateSchema = z.object({
 });
 
 export const unitsRelationshipsSchema = z.tuple([]);
+
+export const userPermissionsRowSchema = z.object({
+  created_at: z.string(),
+  deleted: z.boolean(),
+  id: z.string(),
+  permission: z.string(),
+  updated_at: z.string(),
+  user_id: z.string().nullable(),
+});
+
+export const userPermissionsInsertSchema = z.object({
+  created_at: z.string().optional(),
+  deleted: z.boolean().optional(),
+  id: z.string().optional(),
+  permission: z.string(),
+  updated_at: z.string().optional(),
+  user_id: z.string().optional().nullable(),
+});
+
+export const userPermissionsUpdateSchema = z.object({
+  created_at: z.string().optional(),
+  deleted: z.boolean().optional(),
+  id: z.string().optional(),
+  permission: z.string().optional(),
+  updated_at: z.string().optional(),
+  user_id: z.string().optional().nullable(),
+});
+
+export const userPermissionsRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("user_permissions_user_id_fkey"),
+    columns: z.tuple([z.literal("user_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("users"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+]);
+
+export const usersRowSchema = z.object({
+  created_at: z.string(),
+  deleted: z.boolean(),
+  id: z.string(),
+  password_hash: z.string(),
+  person_id: z.string().nullable(),
+  role: z.string().nullable(),
+  updated_at: z.string(),
+  username: z.string(),
+});
+
+export const usersInsertSchema = z.object({
+  created_at: z.string().optional(),
+  deleted: z.boolean().optional(),
+  id: z.string().optional(),
+  password_hash: z.string(),
+  person_id: z.string().optional().nullable(),
+  role: z.string().optional().nullable(),
+  updated_at: z.string().optional(),
+  username: z.string(),
+});
+
+export const usersUpdateSchema = z.object({
+  created_at: z.string().optional(),
+  deleted: z.boolean().optional(),
+  id: z.string().optional(),
+  password_hash: z.string().optional(),
+  person_id: z.string().optional().nullable(),
+  role: z.string().optional().nullable(),
+  updated_at: z.string().optional(),
+  username: z.string().optional(),
+});
+
+export const usersRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("users_person_id_fkey"),
+    columns: z.tuple([z.literal("person_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("people"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+]);

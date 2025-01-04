@@ -1,4 +1,5 @@
 import { buildQuery, customSynced , supabase} from "@/database/SupaLegend";
+import { Supplier } from "@/types/types";
 import { observable } from "@legendapp/state";
 
 
@@ -24,6 +25,10 @@ export const suppliers$ = observable(
                   getAll: options$.get().getAll,
               });
           },
+      update(input, params) {
+        return supabase.from("suppliers").upsert(input as Supplier).eq("id", input?.person_id as string).select("*").single()
+      },
+      mode: "set",
       actions: ["read", "create", "update", "delete"],
       initial: Object(),
       fieldId: "person_id",

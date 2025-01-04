@@ -17,6 +17,12 @@
     },
     "items": {
       "title": "Items"
+    },
+    "inventory": {
+      "title": "Inventory"
+    },
+    "load": {
+      "title": "Load"
     }
   },
   "home": {
@@ -50,142 +56,165 @@
     "add": "Add item",
     "edit": "Edit item",
     "delete": "Delete item",
-    "view": "View item"
-  },
-  "form": {
-    "categories": {
-      "title": "Categories",
-      "id": {
-        "label": "Category id",
-        "placeholder": "Enter category id"
-      },
-      "name": {
-        "label": "Name",
-        "placeholder": "Enter category name"
-      },
-      "type": {
-        "label": "Type",
-        "placeholder": "Select category type"
-      },
-      "description": {
-        "label": "Description",
-        "placeholder": "Enter description"
-      },
-      "created_at": {
-        "label": "Created at"
-      },
-      "updated_at": {
-        "label": "Updated at"
-      },
-      "created_by": {
-        "label": "Created by"
-      }
+    "view": "View item",
+    "id": {
+      "label": "Item id",
+      "placeholder": "Enter item id"
     },
-    "items": {
-      "title": "Item",
-      "id": {
-        "label": "Item id",
-        "placeholder": "Enter item id"
-      },
-      "sku": {
-        "label": "Sku",
-        "placeholder": "Enter sku"
-      },
-      "barcode": {
-        "label": "Barcode",
-        "placeholder": "Enter barcode"
-      },
-      "name": {
-        "label": "Name",
-        "placeholder": "Enter item name"
-      },
-      "description": {
-        "label": "Description",
-        "placeholder": "Enter description"
-      },
-      "category": {
-        "label": "Category",
-        "placeholder": "Select category"
-      },
-      "selling_type": {
-        "label": "Selling type",
-        "placeholder": "Select selling type for the item",
-        "whole": "Whole",
-        "unit": "Unit"
-      },
-      "whole_unit": {
-        "label": "Whole unit",
-        "placeholder": "Select whole unit"
-      },
-      "sub_unit": {
-        "label": "Sub-unit",
-        "placeholder": "Select sub-unit"
-      },
-      "whole": {
-        "label": "Whole",
-        "placeholder": "Select Whole"
-      },
-      "min_stock_level": {
-        "label": "Minimum stock level",
-        "placeholder": "Enter minimum stock level"
-      },
-      "max_stock_level": {
-        "label": "Maximum stock level",
-        "placeholder": "Enter maximum stock level"
-      },
-      "reorder_point": {
-        "label": "Reorder point",
-        "placeholder": "Enter reorder point"
-      },
-      "whole_buying_price": {
-        "label": "Whole buying price",
-        "placeholder": "Enter whole buying price"
-      },
-      "whole_selling_price": {
-        "label": "Whole selling price",
-        "placeholder": "Enter whole selling price"
-      },
-      "sub_unit_buying_price": {
-        "label": "Unit buying price",
-        "placeholder": "Enter unit buying price"
-      },
-      "sub_unit_selling_price": {
-        "label": "Unit selling price",
-        "placeholder": "Enter unit selling price"
-      },
-      "sub_units_count": {
-        "label": "Sub-units count",
-        "placeholder": "Enter sub-units count"
-      },
-      "buying_price": {
-        "label": "Buying price",
-        "placeholder": "Enter buying price"
-      },
-      "selling_price": {
-        "label": "Selling price",
-        "placeholder": "Enter selling price"
-      },
-      "is_active": {
-        "label": "Active"
-      },
-      "unit": {
-        "label": "Unit"
-      },
-      "current_stock": {
-        "label": "Quantity"
-      },
-      "metadata": {
-        "label": "Metadata",
-        "placeholder": "Enter additional metadata"
-      },
-      "supplier": {
-        "label": "Supplier",
-        "placeholder": "Select supplier"
-      }
+    "sku": {
+      "label": "Sku",
+      "placeholder": "Enter sku"
+    },
+    "barcode": {
+      "label": "Barcode",
+      "placeholder": "Enter barcode"
+    },
+    "name": {
+      "label": "Name",
+      "placeholder": "Enter item name"
+    },
+    "description": {
+      "label": "Description",
+      "placeholder": "Enter description"
+    },
+    "category": {
+      "label": "Category",
+      "placeholder": "Select category"
+    },
+    "selling_type": {
+      "label": "Selling type",
+      "placeholder": "Select selling type for the item",
+      "whole": "Whole",
+      "unit": "Unit"
+    },
+    "whole_unit": {
+      "label": "Whole unit",
+      "placeholder": "Select whole unit"
+    },
+    "sub_unit": {
+      "label": "Sub-unit",
+      "placeholder": "Select sub-unit"
+    },
+    "whole": {
+      "label": "Whole",
+      "placeholder": "Select Whole"
+    },
+    "min_stock_level": {
+      "label": "Minimum stock level",
+      "placeholder": "Enter minimum stock level"
+    },
+    "max_stock_level": {
+      "label": "Maximum stock level",
+      "placeholder": "Enter maximum stock level"
+    },
+    "reorder_point": {
+      "label": "Reorder point",
+      "placeholder": "Enter reorder point"
+    },
+    "whole_buying_price": {
+      "label": "Whole buying price",
+      "placeholder": "Enter whole buying price"
+    },
+    "whole_selling_price": {
+      "label": "Whole selling price",
+      "placeholder": "Enter whole selling price"
+    },
+    "sub_unit_buying_price": {
+      "label": "Unit buying price",
+      "placeholder": "Enter unit buying price"
+    },
+    "sub_unit_selling_price": {
+      "label": "Unit selling price",
+      "placeholder": "Enter unit selling price"
+    },
+    "sub_units_count": {
+      "label": "Sub-units count",
+      "placeholder": "Enter sub-units count"
+    },
+    "buying_price": {
+      "label": "Buying price",
+      "placeholder": "Enter buying price"
+    },
+    "selling_price": {
+      "label": "Selling price",
+      "placeholder": "Enter selling price"
+    },
+    "is_active": {
+      "label": "Active"
+    },
+    "unit": {
+      "label": "Unit",
+      "description": "Add units for this item"
+    },
+    "current_stock": {
+      "label": "Quantity"
+    },
+    "metadata": {
+      "label": "Metadata",
+      "placeholder": "Enter additional metadata"
+    },
+    "supplier": {
+      "label": "Supplier",
+      "placeholder": "Select supplier"
+    },
+    "on_success": {
+      "label": "Success",
+      "description": "The item has been saved successfully."
+    },
+    "on_error": {
+      "label": "Error",
+      "description": "An error occurred while saving the item."
+    }
+  },
+  "categories": {
+    "add": {
+      "title": "Add category"
+    },
+    "title": "Categories",
+    "id": {
+      "label": "Category id",
+      "placeholder": "Enter category id"
+    },
+    "name": {
+      "label": "Name",
+      "placeholder": "Enter category name"
+    },
+    "type": {
+      "label": "Type",
+      "placeholder": "Select category type"
+    },
+    "description": {
+      "label": "Description",
+      "placeholder": "Enter description"
+    }
+  },
+  "units": {
+    "add": {
+      "title": "Add unit"
+    },
+    "title": "Units",
+    "id": {
+      "label": "Unit id",
+      "placeholder": "Enter unit id"
+    },
+    "name": {
+      "label": "Name",
+      "placeholder": "Enter unit name"
+    },
+    "symbol": {
+      "label": "Symbol",
+      "placeholder": "Select symbol type"
+    },
+    "base_unit": {
+      "label": "Is base unit",
+      "placeholder": "Is this unit a base unit"
     }
   },
   "common": {
     "search": "Search",
+    "app": {
+      "name": "Pockit"
+    },
     "save": {
       "label": "Save"
     },

@@ -1,3 +1,4 @@
+import "@/components/sheets/sheets"; // Global Sheets import
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 
@@ -17,6 +18,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { AppProvider } from "@/context/AppContext";
 
+// Toaster
+import { Toaster } from "sonner-native";
+
 const App = () => {
   /** Track font loading state */
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -25,12 +29,14 @@ const App = () => {
   useEffect(() => {
     const loadFonts = async () => {
       await Font.loadAsync({
-        "e-Ukraine-Regular": require("../assets/fonts/e-Ukraine-Regular.otf"),
-        "e-Ukraine-Bold": require("../assets/fonts/e-Ukraine-Bold.otf"),
-        "e-Ukraine-Light": require("../assets/fonts/e-Ukraine-Light.otf"),
-        "e-Ukraine-Thin": require("../assets/fonts/e-Ukraine-Thin.otf"),
-        "e-Ukraine-Medium": require("../assets/fonts/e-Ukraine-Medium.otf"),
-        "e-Ukraine-UltraLight": require("../assets/fonts/e-Ukraine-UltraLight.otf"),
+        "JetBrainsMono-Regular": require("../assets/fonts/JetBrainsMono-Regular.ttf"),
+        "JetBrainsMono-Bold": require("../assets/fonts/JetBrainsMono-Bold.ttf"),
+        "JetBrainsMono-SemiBold": require("../assets/fonts/JetBrainsMono-SemiBold.ttf"),
+        "JetBrainsMono-ExtraBold": require("../assets/fonts/JetBrainsMono-ExtraBold.ttf"),
+        "JetBrainsMono-ExtraLight": require("../assets/fonts/JetBrainsMono-ExtraLight.ttf"),
+        "JetBrainsMono-Light": require("../assets/fonts/JetBrainsMono-Light.ttf"),
+        "JetBrainsMono-Medium": require("../assets/fonts/JetBrainsMono-Medium.ttf"),
+        "JetBrainsMono-Thin": require("../assets/fonts/JetBrainsMono-Thin.ttf"),
       });
       setFontsLoaded(true);
     };
@@ -70,6 +76,7 @@ const App = () => {
                 <Stack.Screen name="(tabs)" />
                 <Stack.Screen name="(items)" />
               </Stack>
+              <Toaster />
             </SheetProvider>
           </ThemeProvider>
         </KeyboardProvider>

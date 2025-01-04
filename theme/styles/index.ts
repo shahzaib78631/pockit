@@ -936,6 +936,13 @@ export const commonStyles = StyleSheet.create((theme) => ({
     fontFamily: theme.fontFamily.regular,
   },
 
+  fontExtraBold: {
+    fontFamily: theme.fontFamily.extraBold,
+  },
+  fontExtraLight: {
+    fontFamily: theme.fontFamily.extraLight,
+  },
+
   fontMedium: {
     fontFamily: theme.fontFamily.medium,
   },
@@ -947,12 +954,11 @@ export const commonStyles = StyleSheet.create((theme) => ({
   fontBold: {
     fontFamily: theme.fontFamily.bold,
   },
+  fontSemiBold: {
+    fontFamily: theme.fontFamily.semiBold,
+  },
 
   fontThin: {
     fontFamily: theme.fontFamily.thin,
-  },
-
-  fontUltraLight: {
-    fontFamily: theme.fontFamily.ultraLight,
   },
 }));

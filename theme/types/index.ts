@@ -88,7 +88,9 @@ export interface FontFamily {
   medium: string;
   light: string;
   thin: string;
-  ultraLight: string;
+  semiBold: string;
+  extraBold: string;
+  extraLight: string;
 }
 
 export interface BorderRadius {

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import React, { useEffect } from "react";
 import {
   ThemedButton,
@@ -10,15 +10,19 @@ import { FormField } from "@/components/form";
 import useItemForm from "@/hooks/useItemForm";
 import { getString } from "@/strings/translations";
 import { useThemeContext } from "@/context/ThemeContext";
-import UnitsList from "@/components/lists/UnitsList";
 import { useAppContext } from "@/context/AppContext";
 import { Show } from "@legendapp/state/react";
-import LabeledBorder from "@/components/LabeledBorder";
-import Seperator from "@/components/Seperator";
-import SuppliersList from "@/components/lists/SuppliersList";
-import { Item } from "@/types/types";
+import { Category, Item, Unit } from "@/types/types";
 import { Barcode } from "expo-barcode-generator";
-import { withUnistyles } from "react-native-unistyles";
+import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import { CategoriesList } from "@/components/lists";
+
+import { SheetManager, useSheetRef } from "react-native-actions-sheet";
+import useItemUnitForm from "@/hooks/useItemUnitsForm";
+import { getColorWithAlpha } from "@/utils/colors";
+import Seperator from "@/components/Seperator";
+import { useFieldArray } from "react-hook-form";
+import { UnitsSheet } from "@/components/sheets";
 
 type ItemFormProps = {
   edit: boolean;
@@ -28,6 +32,7 @@ type ItemFormProps = {
 const ThemedBarcode = withUnistyles(Barcode, (theme) => ({
   options: {
     background: theme.colors.background,
+    lineColor: theme.colors.onBackground,
   },
 }));
 
@@ -48,59 +53,63 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
     item,
   });
 
-  const [
-    wholeBuyingPrice,
-    wholeSellingPrice,
-    unitsPerWhole,
-    sellingType,
-    barcode,
-  ] = watch([
-    "whole_buying_price",
-    "whole_selling_price",
-    "units_per_whole",
-    "selling_type",
-    "barcode",
-  ]);
+  // Manage units with react-hook-form
+  const {
+    fields: units,
+    append: appendUnits,
+    remove: removeUnits,
+  } = useFieldArray({
+    control: control,
+    name: "units",
+    keyName: "key",
+  });
 
-  useEffect(() => {
-    updateUnitPricing("units_per_whole");
-  }, [unitsPerWhole]);
+  const barcode = watch("barcode");
+  const categoryId = watch("category_id");
 
-  useEffect(() => {
-    updateUnitPricing("whole_selling_price");
-  }, [wholeSellingPrice]);
+  const handleDisplayAddCategorySheet = () => {
+    SheetManager.show("AddCategorySheet", {
+      payload: {
+        onChange: (category: Category) => setValue("category_id", category.id),
+      },
+    });
+  };
 
-  useEffect(() => {
-    updateUnitPricing("whole_buying_price");
-  }, [wholeBuyingPrice]);
+  const handleItemUnitSelection = (unit: Unit, checked?: boolean) => {
+    console.log(unit, checked);
+    if (checked) {
+      removeUnits(units.findIndex((i) => i.unit_id === unit.id));
+    } else {
+      appendUnits({ unit_id: unit.id, item_id: getValues("id") });
+    }
+  };
 
-  // Handle form submission
-  const handleFormSubmit = () => {
-    if (edit && item) {
-      // Handle editing item
+  const handleSubmitForm = () => {
+    if (edit) {
       handleSubmit(updateItem)();
     } else {
-      // Handle creating a new item
       handleSubmit(createItem)();
     }
   };
 
-  const updateUnitPricing = (field: string) => {
-    if (field === "whole_buying_price" || field === "units_per_whole") {
-      setValue(
-        "unit_buying_price",
-        getValues("whole_buying_price") / (getValues("units_per_whole") || 1)
-      );
+  useEffect(() => {
+    if (SheetManager.get("UnitsSheet")?.current?.isOpen()) {
+      handleDisplayUnitsSheet();
     }
-    if (field === "whole_selling_price" || field === "units_per_whole") {
-      setValue(
-        "unit_selling_price",
-        getValues("whole_selling_price") / (getValues("units_per_whole") || 1)
-      );
-    }
-  };
+  }, [units]);
 
-  console.log("ItemForm -> errors", errors);
+  const handleDisplayUnitsSheet = () => {
+    // ref.current?.show();
+    SheetManager.show("UnitsSheet", {
+      payload: {
+        value: units
+          .map((i) => i.unit_id)
+          .filter((id): id is string => id !== null && id !== undefined),
+        multiple: true,
+        onChange: handleItemUnitSelection,
+      },
+    });
+  };
 
   return (
     <View style={[commonStyles.gapLg, commonStyles.marginBottomXxl]}>
@@ -111,20 +120,20 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
       <View style={commonStyles.gapVerticalSm}>
         <FormField
           control={control}
-          label={getString("form.items.name.label")}
+          label={getString("items.name.label")}
           name="name"
           error={errors.name}
-          placeholder={getString("form.items.name.placeholder")}
+          placeholder={getString("items.name.placeholder")}
           prepend={
             <ThemedMaterialIcons size={18} name="mode-edit" color="onSurface" />
           }
         />
         <FormField
           control={control}
-          label={getString("form.items.sku.label")}
+          label={getString("items.sku.label")}
           name="sku"
           error={errors.sku}
-          placeholder={getString("form.items.sku.placeholder")}
+          placeholder={getString("items.sku.placeholder")}
           prepend={
             <ThemedMaterialCommunityIcons
               size={18}
@@ -135,10 +144,10 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
         />
         <FormField
           control={control}
-          label={getString("form.items.barcode.label")}
+          label={getString("items.barcode.label")}
           name="barcode"
           error={errors.barcode}
-          placeholder={getString("form.items.barcode.placeholder")}
+          placeholder={getString("items.barcode.placeholder")}
           prepend={
             <ThemedMaterialCommunityIcons
               size={18}
@@ -153,58 +162,26 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
             <ThemedBarcode value={barcode} rotation={-5} />
           </View>
         </Show>
-        <FormField
-          control={control}
-          label={getString("form.items.supplier.label")}
-          name="supplier_id"
-          error={errors.supplier_id}
-          type="picker"
-          placeholder={getString("form.items.supplier.placeholder")}
-          pickerSheetTitle={getString("form.items.supplier.label")}
-          fieldValue={(value: string) =>
-            store$.SuppliersStore.getSupplierName(value)
-          }
-          renderPickerContentComponent={(value, onChange) => (
-            <SuppliersList
-              suppliers={store$.SuppliersStore.getSuppliers()}
-              onChange={(supplier) => {
-                onChange(supplier.person_id);
-              }}
-              value={value}
-            />
-          )}
-          prepend={
-            <ThemedMaterialIcons size={18} name="person" color="onSurface" />
-          }
-          append={
-            <ThemedMaterialCommunityIcons
-              size={18}
-              name="chevron-down"
-              color="onSurface"
-            />
-          }
-        />
 
         <FormField
           control={control}
-          label={getString("form.items.category.label")}
+          label={getString("items.category.label")}
           name="category_id"
           error={errors.category_id}
           type="picker"
-          placeholder={getString("form.items.category.placeholder")}
-          pickerSheetTitle={getString("form.items.category.label")}
+          placeholder={getString("items.category.placeholder")}
+          pickerSheetTitle={getString("items.category.label")}
           fieldValue={(value: string) =>
             store$.CategoriesStore.getCategoryName(value)
           }
-          renderPickerContentComponent={(value, onChange) => (
-            <UnitsList
-              units={store$.CategoriesStore.getCategories()}
+          renderPickerContentComponent={
+            <CategoriesList
               onChange={(category) => {
-                onChange(category.id);
+                setValue("category_id", category.id);
               }}
-              value={value}
+              value={categoryId}
             />
-          )}
+          }
           prepend={
             <ThemedMaterialIcons size={18} name="category" color="onSurface" />
           }
@@ -215,198 +192,54 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
               color="onSurface"
             />
           }
+          renderRightAction={() => (
+            <ThemedButton
+              buttonStyle={commonStyles.paddingSm}
+              onPress={handleDisplayAddCategorySheet}
+            >
+              <ThemedMaterialCommunityIcons
+                size={18}
+                name="plus"
+                color="onPrimary"
+              />
+            </ThemedButton>
+          )}
         />
-
         <Seperator />
-
-        <FormField
-          control={control}
-          label={getString("form.items.selling_type.label")}
-          name="selling_type"
-          error={errors.selling_type}
-          keyboardType="numeric"
-          type="segmented"
-          values={["whole", "unit"]}
-          labels={[
-            getString("form.items.selling_type.whole"),
-            getString("form.items.selling_type.unit"),
-          ]}
-          helpText={getString("form.items.selling_type.placeholder")}
-          prepend={
-            <ThemedMaterialCommunityIcons
-              size={18}
-              name="plus-minus"
-              color="onSurface"
-            />
-          }
-        />
-        <Show if={sellingType === "unit"}>
-          <FormField
-            control={control}
-            label={getString("form.items.whole_unit.label")}
-            name="whole_unit_id"
-            error={errors.whole_unit_id}
-            type="picker"
-            placeholder={getString("form.items.whole_unit.placeholder")}
-            pickerSheetTitle={getString("form.items.whole_unit.label")}
-            fieldValue={(value: string) => store$.UnitsStore.getUnitName(value)}
-            renderPickerContentComponent={(value, onChange) => (
-              <UnitsList
-                units={store$.UnitsStore.getUnits()}
-                onChange={(category) => {
-                  onChange(category.id);
-                }}
-                value={value}
-              />
-            )}
-            prepend={
-              <ThemedMaterialCommunityIcons
-                size={18}
-                name="google-circles-communities"
-                color="onSurface"
-              />
-            }
-            append={
-              <ThemedMaterialCommunityIcons
-                size={18}
-                name="chevron-down"
-                color="onSurface"
-              />
-            }
-          />
-
-          <View style={commonStyles.gapLg}>
-            <LabeledBorder label={getString("form.items.sub_unit.label")}>
-              <FormField
-                control={control}
-                label={getString("form.items.unit.label")}
-                name="sub_unit_id"
-                error={errors.sub_unit_id}
-                type="picker"
-                placeholder={getString("form.items.sub_unit.placeholder")}
-                pickerSheetTitle={getString("form.items.sub_unit.label")}
-                fieldValue={(value: string) =>
-                  store$.UnitsStore.getUnitName(value)
-                }
-                renderPickerContentComponent={(value, onChange) => (
-                  <UnitsList
-                    units={store$.UnitsStore.getUnits()}
-                    onChange={(category) => {
-                      onChange(category.id);
-                    }}
-                    value={value}
-                  />
-                )}
-                prepend={
-                  <ThemedMaterialCommunityIcons
-                    size={18}
-                    name="google-circles-communities"
-                    color="onSurface"
-                  />
-                }
-                append={
-                  <ThemedMaterialCommunityIcons
-                    size={18}
-                    name="chevron-down"
-                    color="onSurface"
-                  />
-                }
-              />
-              <FormField
-                control={control}
-                label={getString("form.items.sub_units_count.label")}
-                name="units_per_whole"
-                error={errors.units_per_whole}
-                keyboardType="numeric"
-                placeholder={getString(
-                  "form.items.sub_units_count.placeholder"
-                )}
-              />
-            </LabeledBorder>
-            <LabeledBorder label={getString("form.items.buying_price.label")}>
-              <View style={[commonStyles.row, commonStyles.gapHorizontalLg]}>
-                <View style={commonStyles.flex1}>
-                  <FormField
-                    control={control}
-                    label={getString("form.items.whole.label")}
-                    name="whole_buying_price"
-                    error={errors.whole_buying_price}
-                    keyboardType="numeric"
-                    placeholder={getString(
-                      "form.items.whole_buying_price.placeholder"
-                    )}
-                  />
-                </View>
-                <View style={commonStyles.flex1}>
-                  <FormField
-                    control={control}
-                    label={getString("form.items.sub_unit.label")}
-                    name="unit_buying_price"
-                    error={errors.unit_buying_price}
-                    keyboardType="numeric"
-                    placeholder={getString(
-                      "form.items.sub_unit_buying_price.placeholder"
-                    )}
-                  />
-                </View>
-              </View>
-            </LabeledBorder>
-
-            <LabeledBorder label={getString("form.items.selling_price.label")}>
-              <View style={[commonStyles.row, commonStyles.gapHorizontalLg]}>
-                <View style={commonStyles.flex1}>
-                  <FormField
-                    control={control}
-                    label={getString("form.items.whole.label")}
-                    name="whole_selling_price"
-                    error={errors.whole_selling_price}
-                    keyboardType="numeric"
-                    placeholder={getString(
-                      "form.items.whole_selling_price.placeholder"
-                    )}
-                  />
-                </View>
-                <View style={commonStyles.flex1}>
-                  <FormField
-                    control={control}
-                    label={getString("form.items.sub_unit.label")}
-                    name="unit_selling_price"
-                    error={errors.unit_selling_price}
-                    keyboardType="numeric"
-                    placeholder={getString(
-                      "form.items.sub_unit_selling_price.placeholder"
-                    )}
-                  />
-                </View>
-              </View>
-            </LabeledBorder>
+        {/* Paid for Section */}
+        <View style={[commonStyles.rowSpaceBetween, commonStyles.gapSm]}>
+          <View
+            style={[
+              commonStyles.flex1,
+              commonStyles.gapSm,
+              commonStyles.col,
+              commonStyles.justifyBetween,
+            ]}
+          >
+            <ThemedText type="bold">{getString("items.unit.label")}</ThemedText>
+            <ThemedText type="light" fontSize="sm" style={styles.description}>
+              {getString("items.unit.description")}
+            </ThemedText>
           </View>
-        </Show>
-
-        <Show if={sellingType !== "unit"}>
-          <FormField
-            control={control}
-            label={getString("form.items.whole_buying_price.label")}
-            name="whole_buying_price"
-            error={errors.whole_buying_price}
-            keyboardType="numeric"
-            placeholder={getString("form.items.whole_buying_price.placeholder")}
-          />
-          <FormField
-            control={control}
-            label={getString("form.items.whole_selling_price.label")}
-            name="whole_selling_price"
-            error={errors.whole_selling_price}
-            keyboardType="numeric"
-            placeholder={getString(
-              "form.items.whole_selling_price.placeholder"
-            )}
-          />
-        </Show>
+          <ThemedButton
+            borderRadius="lg"
+            fontSize="sm"
+            variant="primary"
+            onPress={handleDisplayUnitsSheet}
+            buttonStyle={commonStyles.paddingMd}
+          >
+            <ThemedMaterialCommunityIcons
+              name="plus"
+              size={18}
+              color="onPrimary"
+            />
+          </ThemedButton>
+        </View>
+        <Seperator />
       </View>
       <ThemedButton
         title={getString("common.save.label")}
-        onPress={handleFormSubmit}
+        onPress={handleSubmitForm}
       />
     </View>
   );
@@ -414,4 +247,8 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
 
 export default ItemForm;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create((theme) => ({
+  description: {
+    color: getColorWithAlpha(theme.colors.onBackground, 0.5),
+  },
+}));

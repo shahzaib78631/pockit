@@ -51,6 +51,8 @@ interface BaseBottomActionSheetProps extends ActionSheetProps {
   titleProps?: ThemedTextProps;
 
   reference?: React.RefObject<ActionSheetRef> | null;
+
+  renderRightAction?: () => React.JSX.Element;
 }
 
 const BaseBottomActionSheet = ({
@@ -59,6 +61,7 @@ const BaseBottomActionSheet = ({
   title,
   titleProps,
   reference,
+  renderRightAction,
 }: BaseBottomActionSheetProps) => {
   const insets = useSafeAreaInsets();
 
@@ -72,17 +75,25 @@ const BaseBottomActionSheet = ({
       useBottomSafeAreaPadding
       overdrawEnabled={false}
     >
-      {title && (
-        <ThemedText
-          type="bold"
-          fontSize="xxl"
-          style={commonStyles.marginBottomMd}
-          color="primary"
-          {...titleProps}
-        >
-          {title}
-        </ThemedText>
-      )}
+      <View
+        style={[
+          commonStyles.rowJustifySpaceBetween,
+          commonStyles.alignCenter,
+          commonStyles.marginBottomMd,
+        ]}
+      >
+        {title && (
+          <ThemedText
+            type="bold"
+            fontSize="xxl"
+            color="primary"
+            {...titleProps}
+          >
+            {title}
+          </ThemedText>
+        )}
+        {renderRightAction && renderRightAction()}
+      </View>
       {children}
     </ThemedActionSheet>
   );

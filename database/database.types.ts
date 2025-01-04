@@ -13,6 +13,7 @@ export type Database = {
         Row: {
           created_at: string
           deleted: boolean
+          description: string | null
           id: string
           name: string
           updated_at: string
@@ -20,6 +21,7 @@ export type Database = {
         Insert: {
           created_at?: string
           deleted?: boolean
+          description?: string | null
           id?: string
           name: string
           updated_at?: string
@@ -27,6 +29,7 @@ export type Database = {
         Update: {
           created_at?: string
           deleted?: boolean
+          description?: string | null
           id?: string
           name?: string
           updated_at?: string
@@ -35,36 +38,46 @@ export type Database = {
       }
       inventory: {
         Row: {
+          change_type: string | null
           created_at: string
-          deleted: boolean
+          created_by: string | null
           id: string
           item_id: string
           location_id: string | null
-          unit_count: number
-          updated_at: string
-          whole_count: number
+          quantity: number
+          reason: string | null
+          unit_id: string | null
         }
         Insert: {
+          change_type?: string | null
           created_at?: string
-          deleted?: boolean
+          created_by?: string | null
           id?: string
           item_id: string
           location_id?: string | null
-          unit_count?: number
-          updated_at?: string
-          whole_count?: number
+          quantity?: number
+          reason?: string | null
+          unit_id?: string | null
         }
         Update: {
+          change_type?: string | null
           created_at?: string
-          deleted?: boolean
+          created_by?: string | null
           id?: string
           item_id?: string
           location_id?: string | null
-          unit_count?: number
-          updated_at?: string
-          whole_count?: number
+          quantity?: number
+          reason?: string | null
+          unit_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "inventory_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "inventory_item_id_fkey"
             columns: ["item_id"]
@@ -79,6 +92,116 @@ export type Database = {
             referencedRelation: "locations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "inventory_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      item_prices: {
+        Row: {
+          buying_price: number | null
+          created_at: string
+          deleted: boolean
+          id: string
+          item_id: string | null
+          price_list_id: string | null
+          selling_price: number | null
+          unit_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          buying_price?: number | null
+          created_at?: string
+          deleted?: boolean
+          id?: string
+          item_id?: string | null
+          price_list_id?: string | null
+          selling_price?: number | null
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          buying_price?: number | null
+          created_at?: string
+          deleted?: boolean
+          id?: string
+          item_id?: string | null
+          price_list_id?: string | null
+          selling_price?: number | null
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "item_prices_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_prices_price_list_id_fkey"
+            columns: ["price_list_id"]
+            isOneToOne: false
+            referencedRelation: "price_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_prices_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      item_units: {
+        Row: {
+          created_at: string
+          deleted: boolean
+          id: string
+          is_primary: boolean | null
+          item_id: string | null
+          unit_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted?: boolean
+          id?: string
+          is_primary?: boolean | null
+          item_id?: string | null
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted?: boolean
+          id?: string
+          is_primary?: boolean | null
+          item_id?: string | null
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "item_units_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_units_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
         ]
       }
       items: {
@@ -88,19 +211,10 @@ export type Database = {
           created_at: string
           deleted: boolean
           id: string
-          is_active: boolean
+          image_url: string | null
           name: string
-          selling_type: string
           sku: string
-          sub_unit_id: string | null
-          supplier_id: string | null
-          unit_buying_price: number
-          unit_selling_price: number
-          units_per_whole: number
           updated_at: string
-          whole_buying_price: number
-          whole_selling_price: number
-          whole_unit_id: string | null
         }
         Insert: {
           barcode?: string | null
@@ -108,19 +222,10 @@ export type Database = {
           created_at?: string
           deleted?: boolean
           id?: string
-          is_active?: boolean
+          image_url?: string | null
           name: string
-          selling_type?: string
           sku: string
-          sub_unit_id?: string | null
-          supplier_id?: string | null
-          unit_buying_price?: number
-          unit_selling_price?: number
-          units_per_whole?: number
           updated_at?: string
-          whole_buying_price?: number
-          whole_selling_price?: number
-          whole_unit_id?: string | null
         }
         Update: {
           barcode?: string | null
@@ -128,19 +233,10 @@ export type Database = {
           created_at?: string
           deleted?: boolean
           id?: string
-          is_active?: boolean
+          image_url?: string | null
           name?: string
-          selling_type?: string
           sku?: string
-          sub_unit_id?: string | null
-          supplier_id?: string | null
-          unit_buying_price?: number
-          unit_selling_price?: number
-          units_per_whole?: number
           updated_at?: string
-          whole_buying_price?: number
-          whole_selling_price?: number
-          whole_unit_id?: string | null
         }
         Relationships: [
           {
@@ -148,27 +244,6 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "items_sub_unit_id_fkey"
-            columns: ["sub_unit_id"]
-            isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "items_supplier_id_fkey"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "suppliers"
-            referencedColumns: ["person_id"]
-          },
-          {
-            foreignKeyName: "items_whole_unit_id_fkey"
-            columns: ["whole_unit_id"]
-            isOneToOne: false
-            referencedRelation: "units"
             referencedColumns: ["id"]
           },
         ]
@@ -200,10 +275,122 @@ export type Database = {
         }
         Relationships: []
       }
+      order_items: {
+        Row: {
+          created_at: string
+          deleted: boolean
+          discount: number | null
+          id: string
+          item_id: string | null
+          order_id: string | null
+          quantity: number
+          unit_id: string | null
+          unit_price: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted?: boolean
+          discount?: number | null
+          id?: string
+          item_id?: string | null
+          order_id?: string | null
+          quantity: number
+          unit_id?: string | null
+          unit_price: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted?: boolean
+          discount?: number | null
+          id?: string
+          item_id?: string | null
+          order_id?: string | null
+          quantity?: number
+          unit_id?: string | null
+          unit_price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_id: string | null
+          deleted: boolean
+          id: string
+          order_date: string
+          order_type: string
+          status: string | null
+          supplier_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id?: string | null
+          deleted?: boolean
+          id?: string
+          order_date?: string
+          order_type: string
+          status?: string | null
+          supplier_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string | null
+          deleted?: boolean
+          id?: string
+          order_date?: string
+          order_type?: string
+          status?: string | null
+          supplier_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       people: {
         Row: {
           address1: string
-          address2: string
+          address2: string | null
           city: string
           comments: string | null
           country: string
@@ -215,13 +402,13 @@ export type Database = {
           id: string
           last_name: string
           phone_number: string
-          state: string
+          state: string | null
           updated_at: string
-          zip: string
+          zip: string | null
         }
         Insert: {
           address1: string
-          address2: string
+          address2?: string | null
           city: string
           comments?: string | null
           country: string
@@ -233,13 +420,13 @@ export type Database = {
           id?: string
           last_name: string
           phone_number: string
-          state: string
+          state?: string | null
           updated_at?: string
-          zip: string
+          zip?: string | null
         }
         Update: {
           address1?: string
-          address2?: string
+          address2?: string | null
           city?: string
           comments?: string | null
           country?: string
@@ -251,52 +438,122 @@ export type Database = {
           id?: string
           last_name?: string
           phone_number?: string
-          state?: string
+          state?: string | null
           updated_at?: string
-          zip?: string
+          zip?: string | null
         }
         Relationships: []
       }
-      suppliers: {
+      person_roles: {
         Row: {
-          account_number: string | null
-          agency_name: string
-          company_name: string
           created_at: string
           deleted: boolean
-          person_id: string
+          id: string
+          person_id: string | null
+          role: string
           updated_at: string
         }
         Insert: {
-          account_number?: string | null
-          agency_name: string
-          company_name: string
           created_at?: string
           deleted?: boolean
-          person_id: string
+          id?: string
+          person_id?: string | null
+          role: string
           updated_at?: string
         }
         Update: {
-          account_number?: string | null
-          agency_name?: string
-          company_name?: string
           created_at?: string
           deleted?: boolean
-          person_id?: string
+          id?: string
+          person_id?: string | null
+          role?: string
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "suppliers_person_id_fkey"
+            foreignKeyName: "person_roles_person_id_fkey"
             columns: ["person_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      price_lists: {
+        Row: {
+          created_at: string
+          deleted: boolean
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted?: boolean
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted?: boolean
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      unit_conversions: {
+        Row: {
+          base_unit_id: string | null
+          conversion_factor: number
+          created_at: string
+          deleted: boolean
+          id: string
+          unit_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          base_unit_id?: string | null
+          conversion_factor: number
+          created_at?: string
+          deleted?: boolean
+          id?: string
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          base_unit_id?: string | null
+          conversion_factor?: number
+          created_at?: string
+          deleted?: boolean
+          id?: string
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unit_conversions_base_unit_id_fkey"
+            columns: ["base_unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "unit_conversions_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
             referencedColumns: ["id"]
           },
         ]
       }
       units: {
         Row: {
+          base_unit: boolean | null
           created_at: string
           deleted: boolean
           id: string
@@ -305,6 +562,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          base_unit?: boolean | null
           created_at?: string
           deleted?: boolean
           id?: string
@@ -313,6 +571,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          base_unit?: boolean | null
           created_at?: string
           deleted?: boolean
           id?: string
@@ -321,6 +580,82 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      user_permissions: {
+        Row: {
+          created_at: string
+          deleted: boolean
+          id: string
+          permission: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          deleted?: boolean
+          id?: string
+          permission: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          deleted?: boolean
+          id?: string
+          permission?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_permissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string
+          deleted: boolean
+          id: string
+          password_hash: string
+          person_id: string | null
+          role: string | null
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          deleted?: boolean
+          id?: string
+          password_hash: string
+          person_id?: string | null
+          role?: string | null
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          deleted?: boolean
+          id?: string
+          password_hash?: string
+          person_id?: string | null
+          role?: string | null
+          updated_at?: string
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "users_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

@@ -19,7 +19,7 @@ import Reanimated, {
 } from "react-native-reanimated";
 import { commonStyles } from "@/theme/styles";
 import { Tables } from "@/database/database.types";
-import { observer } from "@legendapp/state/react";
+import { observer, use$ } from "@legendapp/state/react";
 import { useAppContext } from "@/context/AppContext";
 import { Item } from "@/types/types";
 
@@ -66,37 +66,6 @@ const ItemsListItemCard = ({
 }) => {
   const { store$ } = useAppContext();
 
-  const inventoryItem = store$.InventoryStore.getInventoryItem(item.id);
-
-  const getBuyingPrice = useMemo(() => {
-    if (item?.selling_type === "whole") {
-      return formatCurrency("$", item?.whole_buying_price || 0);
-    } else if (item?.selling_type === "unit") {
-      return formatCurrency("$", item?.unit_buying_price || 0);
-    }
-  }, [item]);
-
-  const getSellingPrice = useMemo(() => {
-    if (item?.selling_type === "whole") {
-      return formatCurrency("$", item?.whole_selling_price || 0);
-    } else if (item?.selling_type === "unit") {
-      return formatCurrency("$", item?.unit_selling_price || 0);
-    }
-  }, [item]);
-
-  const getAvailableStock = useMemo(() => {
-    if (item?.selling_type === "whole") {
-      return inventoryItem?.whole_count || 0;
-    }
-    if (item?.selling_type === "unit") {
-      return inventoryItem?.unit_count || 0;
-    }
-  }, [item, inventoryItem?.updated_at]);
-
-  styles.useVariants({
-    color: getAvailableStock === 0,
-  });
-
   const handleItemPress = () => {
     if (onPress) {
       onPress(item);
@@ -129,7 +98,6 @@ const ItemsListItemCard = ({
           ]}
         >
           <View style={[commonStyles.rowAlignCenter, commonStyles.gapSm]}>
-            <View style={[styles.status]} />
             <ThemedText
               type="medium"
               fontSize="md"
@@ -148,56 +116,6 @@ const ItemsListItemCard = ({
             commonStyles.justifyBetween,
           ]}
         >
-          <View
-            style={[
-              commonStyles.paddingLg,
-              commonStyles.gapMd,
-              commonStyles.flex1,
-            ]}
-          >
-            <View style={[commonStyles.gapXs]}>
-              <ThemedText type="regular" fontSize="sm" color="onSurfaceVariant">
-                {getString("form.items.current_stock.label")}
-              </ThemedText>
-              <ThemedText fontSize="sm" type="medium">
-                {getAvailableStock}
-              </ThemedText>
-            </View>
-            <View style={[commonStyles.gapXs]}>
-              <ThemedText type="regular" fontSize="sm" color="onSurfaceVariant">
-                {getString("form.items.selling_price.label")}
-              </ThemedText>
-              <ThemedText fontSize="sm" type="medium">
-                {getSellingPrice}
-              </ThemedText>
-            </View>
-          </View>
-          <View
-            style={[
-              commonStyles.paddingLg,
-              commonStyles.gapMd,
-              commonStyles.flex1,
-            ]}
-          >
-            <View style={[commonStyles.gapXs]}>
-              <ThemedText type="regular" fontSize="sm" color="onSurfaceVariant">
-                {getString("form.items.category.label")}
-              </ThemedText>
-              <ThemedText fontSize="sm" type="medium">
-                {item?.category_id
-                  ? store$.CategoriesStore.getCategoryName(item?.category_id)
-                  : "-"}
-              </ThemedText>
-            </View>
-            <View style={[commonStyles.gapXs]}>
-              <ThemedText type="regular" fontSize="sm" color="onSurfaceVariant">
-                {getString("form.items.buying_price.label")}
-              </ThemedText>
-              <ThemedText fontSize="sm" type="medium">
-                {getBuyingPrice}
-              </ThemedText>
-            </View>
-          </View>
           <View style={styles.addBtn}>
             <ThemedButton
               color={"secondary"}
@@ -212,7 +130,7 @@ const ItemsListItemCard = ({
   );
 };
 
-export default observer(ItemsListItemCard);
+export default ItemsListItemCard;
 
 const styles = StyleSheet.create((theme) => ({
   cardContainer: {
@@ -243,12 +161,5 @@ const styles = StyleSheet.create((theme) => ({
     height: 8,
     borderRadius: 5,
     backgroundColor: theme.colors.primary,
-    variants: {
-      color: {
-        true: {
-          backgroundColor: theme.colors.error,
-        },
-      },
-    },
   },
 }));

@@ -1,8 +1,8 @@
-import { Tables } from "@/database.types";
 import { buildQuery, customSynced , supabase} from "@/database/SupaLegend";
+import { getString } from "@/strings/translations";
 import { Item } from "@/types/types";
 import { observable } from "@legendapp/state";
-import { SyncTransform } from "@legendapp/state/sync";
+import { toast } from "sonner-native";
 
 // Observable for options including pagination and "get all" flag
 const options$ = observable({
@@ -29,11 +29,16 @@ export const itemsTable$ = observable(
             limit: options$.get().limit,
             getAll: options$.get().getAll,
         });
-    },
-    actions: ["read", "create", "update", "delete"],
+      },
+      update(input, params) {
+        return supabase.from("items").upsert(input as Item).eq("id", input?.id as string).select("*").single()
+      },
+      updatePartial: true,
+      mode: "set",
+      actions: ["read", "create", "update", "delete"],
       realtime: true,
       // Sync only diffs
-      changesSince: 'all',
+      changesSince: 'last-sync',
       // Persist data and pending changes locally
       persist: {
         name: 'life',
@@ -43,6 +48,12 @@ export const itemsTable$ = observable(
         times: 1,
         infinite: false, // Retry changes with exponential backoff
       },
+      onSaved(){
+        // toast.success(getString("form.items.on_success.description"))
+      },
+      onError(error, params) {
+          // toast.error(getString("form.items.on_error.description"))
+      },
     })
   );
 
@@ -51,17 +62,16 @@ export const itemsTable$ = observable(
 export const items$ = observable<Record<string, Item>>({}); // Initialize as an empty array for "load more"
 
 export const ItemsStore$ = observable({
-    items: itemsTable$.get(),
     options: options$.get(),
     getItems: () => {
         // items$.set((prev) => ({ ...prev, ...itemsTable$.get() }));
         return Object.values(itemsTable$.get()) || [];
     },
     getItem: (id: string) => {
-        return items$.get()?.[id]
+        return itemsTable$[id].get()
     },
     getItemName: (id: string) => {
-        return items$.get()?.[id]?.["name"];
+        return itemsTable$[id].get()?.["name"];
     },
     loadMore: () => {
         const currentPage = options$.get().page;

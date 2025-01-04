@@ -14,7 +14,7 @@ const EditItem = () => {
   return (
     <ThemedView
       statusbarBackgroundColor="surface2"
-      title={getString("items.add")}
+      title={getString("items.edit")}
       goBackEnabled={true}
       scrollEnabled
     >

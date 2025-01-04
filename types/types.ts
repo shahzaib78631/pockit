@@ -9,9 +9,6 @@ export type Category = Tables<"categories">
 export type Peoples = Tables<"people">[]
 export type People = Tables<"people">
 
-export type Suppliers = (Tables<"suppliers"> & { profile?: Peoples })[];
-export type Supplier =  Tables<"suppliers"> & { profile?: Peoples };
-
 export type Inventories = Tables<"inventory">[]
 export type Inventory = Tables<"inventory">
 
@@ -20,3 +17,6 @@ export type Location = Tables<"locations">
 
 export type Items = (Tables<"items"> & { inventory?: Inventories })[];
 export type Item = Tables<"items"> & { inventory?: Inventories };
+
+export type ItemUnits = Tables<"item_units">[]
+export type ItemUnit = Tables<"item_units">

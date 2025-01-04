@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { View, TextInput, TextInputProps } from "react-native";
+import { View, TextInput, TextInputProps, Pressable } from "react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
 import ThemedText from "@/components/ui/ThemedText";
 import { useThemeContext } from "@/context/ThemeContext";
@@ -39,6 +39,7 @@ const ThemedTextInput: React.FC<ThemedTextInputProps> = ({
   isLabelVisible = true,
   prepend,
   append,
+  onPress,
   ...rest
 }: ThemedTextInputProps): React.ReactElement => {
   const { commonStyles } = useThemeContext();
@@ -56,7 +57,11 @@ const ThemedTextInput: React.FC<ThemedTextInputProps> = ({
   );
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <Pressable
+      disabled={!onPress}
+      onPress={onPress}
+      style={[styles.container, containerStyle]}
+    >
       {isLabelVisible && label && (
         <ThemedText fontSize="sm" style={labelStyle}>
           {label}
@@ -74,11 +79,12 @@ const ThemedTextInput: React.FC<ThemedTextInputProps> = ({
           onChangeText={onChangeText}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
+          onPress={onPress}
           {...rest}
         />
         {append && <View style={[commonStyles.center]}>{append}</View>}
       </View>
-    </View>
+    </Pressable>
   );
 };
 

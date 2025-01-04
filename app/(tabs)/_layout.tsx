@@ -24,10 +24,10 @@ const TabsLayout: React.FC = () => {
         }}
       />
       <Tabs.Screen
-        name="items"
+        name="(inventory)"
         options={{
-          title: getString("screen.items.title"),
-          headerTitle: getString("screen.items.title"),
+          title: getString("screen.inventory.title"),
+          headerTitle: getString("screen.inventory.title"),
         }}
       />
       <Tabs.Screen

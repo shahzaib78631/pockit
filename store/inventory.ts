@@ -1,4 +1,5 @@
 import { customSynced , supabase} from "@/database/SupaLegend";
+import { Inventory } from "@/types/types";
 import { observable } from "@legendapp/state";
 
 export const inventoryTable$ = observable(
@@ -7,6 +8,10 @@ export const inventoryTable$ = observable(
       collection: "inventory",
       select: (from) => from.select("*"),
       actions: ["read", "create", "update", "delete"],
+      update(input, params) {
+        return supabase.from("inventory").upsert(input as Inventory).eq("id", input?.id as string).select("*").single()
+      },
+      mode: "set",
        // Persist data and pending changes locally
       persist: {
         name: 'inventory',

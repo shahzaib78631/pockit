@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Platform,
   TextInputProps,
@@ -12,7 +12,11 @@ import {
 import { Control, Controller } from "react-hook-form";
 
 // Action Sheet
-import { ActionSheetRef } from "react-native-actions-sheet";
+import {
+  ActionSheetRef,
+  SheetManager,
+  useSheetRef,
+} from "react-native-actions-sheet";
 
 // Date picker
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -29,6 +33,13 @@ import ErrorMessage from "@/components/form/ErrorMessage";
 import { ThemedTextInput, ThemedText, ThemedCheckbox } from "@/components/ui";
 import ThemedSegmentedControls from "@/components/ui/ThemedSegmentedControls";
 import dayjs from "dayjs";
+import { FormFieldPickerSheet } from "@/components/sheets";
+import { observable } from "@legendapp/state";
+import {
+  useObservable,
+  useObserve,
+  useObserveEffect,
+} from "@legendapp/state/react";
 
 /**
  * Props for the base form field component.
@@ -74,10 +85,8 @@ interface PickerFieldPropsBase extends Omit<BaseFormFieldProps, "type"> {
   /** Function to format the field value for display. */
   fieldValue: (value: any) => string | undefined;
   /** Content to render inside the picker bottom sheet. */
-  renderPickerContentComponent?: (
-    value: any,
-    onChange: (...event: any[]) => void
-  ) => React.JSX.Element;
+  renderPickerContentComponent?: React.JSX.Element;
+  renderRightAction?: () => React.JSX.Element;
 }
 
 /**
@@ -96,7 +105,7 @@ interface SegmentedFieldProps extends BaseFormFieldProps {
 /**
  * Combined props for picker fields, supporting optional configurations.
  */
-type PickerFieldProps = PickerFieldPropsBase &
+export type PickerFieldProps = PickerFieldPropsBase &
   (
     | {
         renderPickerComponent: (
@@ -142,20 +151,24 @@ const FormField = ({
   formatter,
   ...props
 }: FormFieldProps): JSX.Element => {
-  // Use the useThemeContext hook to get the current theme
-  const { commonStyles, theme } = useThemeContext();
-
-  const bottomSheetReference = useRef<ActionSheetRef>(null);
+  // Participants sheet reference
+  const ref = useSheetRef("ParticipantsSheet");
   const [showPicker, setShowPicker] = useState(false);
   const [dateTimePickerValue, setDateTimePickerValue] = useState<
     Date | undefined
   >(new Date());
+
+  const pickerState = useObservable<{
+    isShown: boolean;
+    pickerOnChange: ((value: any) => void) | null;
+  }>({ isShown: false, pickerOnChange: null });
 
   const {
     pickerConfig,
     renderPickerComponent,
     pickerSheetTitle,
     renderPickerContentComponent,
+    renderRightAction,
     fieldValue,
   } = props as PickerFieldProps;
 
@@ -170,6 +183,32 @@ const FormField = ({
     if (selectedDateTime) {
       setDateTimePickerValue(selectedDateTime);
       onChange(selectedDateTime.toISOString());
+    }
+  };
+
+  useEffect(() => {
+    if (pickerState.isShown.$ && type === "picker") {
+      handleShowPicker();
+    }
+  }, [fieldValue]);
+
+  const handleShowPicker = () => {
+    pickerState.isShown.$ = true;
+
+    if (pickerConfig) {
+      // Open picker using pickerConfig if available
+      pickerConfig.open();
+    } else {
+      // Show the picker sheet using SheetManager
+      SheetManager.show("FormFieldPicker", {
+        payload: {
+          children: renderPickerContentComponent,
+          renderRightAction,
+          pickerSheetTitle,
+        },
+      }).then((result) => {
+        pickerState.isShown.$ = false;
+      });
     }
   };
 
@@ -193,43 +232,17 @@ const FormField = ({
     } else if (type === "picker") {
       return (
         <>
-          <TouchableOpacity
-            onPress={() =>
-              pickerConfig
-                ? pickerConfig.open()
-                : bottomSheetReference.current?.show()
-            }
-            activeOpacity={0.8}
-          >
-            <ThemedTextInput
-              placeholder={placeholder}
-              value={fieldValue(value) || ""}
-              onTouchStart={() =>
-                pickerConfig
-                  ? pickerConfig.open()
-                  : bottomSheetReference.current?.show()
-              }
-              editable={false}
-              inputStyle={inputStyle}
-              prepend={prepend}
-              append={append}
-              containerStyle={containerStyle}
-              onPress={() =>
-                pickerConfig
-                  ? pickerConfig.open()
-                  : bottomSheetReference.current?.show()
-              }
-              {...props}
-            />
-          </TouchableOpacity>
-          {renderPickerContentComponent && (
-            <BaseBottomActionSheet
-              reference={bottomSheetReference}
-              title={pickerSheetTitle}
-            >
-              {renderPickerContentComponent(value, onChange)}
-            </BaseBottomActionSheet>
-          )}
+          <ThemedTextInput
+            placeholder={placeholder}
+            value={fieldValue(value) || ""}
+            editable={false}
+            inputStyle={inputStyle}
+            prepend={prepend}
+            append={append}
+            containerStyle={containerStyle}
+            onPress={handleShowPicker}
+            {...props}
+          />
           {renderPickerComponent && renderPickerComponent(value, onChange)}
         </>
       );

@@ -170,8 +170,8 @@ function FabMenu({
 
   const mainButtonStyle: ViewStyle = {
     zIndex: 1,
-    height: 60,
-    width: 60,
+    height: 50,
+    width: 50,
     borderRadius: theme.borderRadius.xl,
     backgroundColor: mainButtonColor,
     justifyContent: "center",
@@ -223,8 +223,8 @@ const styles = (theme: UnistylesTheme) =>
       position: "relative",
       justifyContent: "flex-end",
       alignItems: "flex-end",
-      bottom: theme.spacing.xs,
-      right: theme.spacing.xs,
+      bottom: theme.spacing.md,
+      right: theme.spacing.md,
     },
     buttonContainer: {
       position: "absolute",

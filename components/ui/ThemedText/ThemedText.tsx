@@ -1,5 +1,5 @@
 import { commonStyles } from "@/theme/styles";
-import { Colors, FontSize } from "@/theme/types";
+import { Colors, FontFamily, FontSize } from "@/theme/types";
 import React from "react";
 import { Text, TextProps, TextStyle } from "react-native";
 
@@ -7,7 +7,7 @@ export interface ThemedTextProps extends TextProps {
   /** Content of the text */
   children: React.ReactNode;
   /** Font type to apply */
-  type?: "regular" | "bold" | "thin" | "ultraLight" | "light" | "medium";
+  type?: keyof FontFamily;
   /** Font size to apply */
   fontSize?: keyof FontSize;
   /** Text color to apply from theme */
@@ -19,7 +19,7 @@ export interface ThemedTextProps extends TextProps {
 const ThemedText: React.FC<ThemedTextProps> = ({
   children,
   style,
-  type = "light",
+  type = "regular",
   fontSize = "md",
   color = "onSurface", // Default color
   textAlign = "auto", // Default alignment

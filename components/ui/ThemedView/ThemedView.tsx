@@ -29,6 +29,7 @@ const ThemedView: React.FC<ThemedViewProps> = ({
   statusbarBackgroundColor = "background",
   actions = [],
   loading = false,
+  withBottomTabs = false,
   ...props
 }: ThemedViewProps): React.ReactElement => {
   const { commonStyles } = useThemeContext();
@@ -55,8 +56,10 @@ const ThemedView: React.FC<ThemedViewProps> = ({
       {(title || (canGoBack && goBackEnabled)) && (
         <View
           style={[
-            commonStyles.paddingHorizontalXl,
-            commonStyles.paddingVerticalXl,
+            commonStyles.paddingHorizontalMd,
+            withBottomTabs
+              ? commonStyles.paddingVerticalMd
+              : commonStyles.paddingVerticalXl,
             commonStyles.rowJustifySpaceBetween,
             commonStyles.rowAlignCenter,
             commonStyles.backgroundColor("surface2"),
@@ -85,8 +88,8 @@ const ThemedView: React.FC<ThemedViewProps> = ({
 
             {size === "regular" && (
               <ThemedText
-                type="medium"
-                fontSize="lg"
+                type="bold"
+                fontSize="xxl"
                 color="onPrimaryContainer"
                 style={styles.title}
               >
@@ -171,6 +174,7 @@ interface ThemedViewProps extends ViewProps, ScrollViewProps {
   titleAlignment?: "left" | "center" | "right"; // New prop
   size?: "regular" | "large"; // New prop
   loading?: boolean;
+  withBottomTabs?: boolean;
 }
 
 // Updated Styles

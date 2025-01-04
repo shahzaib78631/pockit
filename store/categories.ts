@@ -1,13 +1,18 @@
 import { customSynced , supabase} from "@/database/SupaLegend";
+import { Category } from "@/types/types";
 import { observable } from "@legendapp/state";
+import { toast } from "sonner-native";
 
-export const categories$ = observable(
+export const categoriesTable$ = observable(
     customSynced({
       supabase,
       collection: "categories",
       select: (from) => from.select("*"),
       actions: ["read", "create", "update", "delete"],
       initial: Object(),
+      update(input, params) {
+        return supabase.from("categories").upsert(input as Category).eq("id", input?.id as string).select("*").single()
+      },
        // Persist data and pending changes locally
       persist: {
         name: 'categories',
@@ -17,19 +22,20 @@ export const categories$ = observable(
         infinite: true, // Retry changes with exponential backoff
       },
       // Sync only diffs
-      changesSince: 'last-sync',
+      changesSince: 'all',
+      realtime: true,
     })
   );
 
 export const CategoriesStore$ = observable({
-    categories: categories$.get(),
+    categories: categoriesTable$.get(),
     getCategories: () => {
-        return Object.values(categories$.get()) || [];
+        return Object.values(categoriesTable$.get()) || [];
     },
     getCategory: (id: string) => {
-        return categories$[id]?.get();
+        return categoriesTable$[id]?.get();
     },
     getCategoryName: (id: string) => {
-        return CategoriesStore$.getCategory(id)?.["name"];
+        return categoriesTable$?.[id]?.get()?.name;
     },
 });
