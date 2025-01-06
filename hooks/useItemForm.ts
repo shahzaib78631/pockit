@@ -14,9 +14,6 @@ interface Params {
 }
 
 const useItemForm = ({item}: Params) => {
-
-  const {store$} = useAppContext();
-
   /**
    * Form controller with dynamic initial values and Zod validation
    */

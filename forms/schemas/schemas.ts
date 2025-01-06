@@ -6,7 +6,7 @@ export const jsonSchema: z.ZodSchema<Json> = z.lazy(() =>
   z
     .union([
       z.string(),
-      z.coerce.number(),
+      z.number(),
       z.boolean(),
       z.record(z.union([jsonSchema, z.undefined()])),
       z.array(jsonSchema),
@@ -50,7 +50,7 @@ export const inventoryRowSchema = z.object({
   id: z.string(),
   item_id: z.string(),
   location_id: z.string().nullable(),
-  quantity: z.coerce.number(),
+  quantity: z.number(),
   reason: z.string().nullable(),
   unit_id: z.string().nullable(),
 });
@@ -62,7 +62,7 @@ export const inventoryInsertSchema = z.object({
   id: z.string().optional(),
   item_id: z.string(),
   location_id: z.string().optional().nullable(),
-  quantity: z.coerce.number().optional(),
+  quantity: z.number().optional(),
   reason: z.string().optional().nullable(),
   unit_id: z.string().optional().nullable(),
 });
@@ -74,7 +74,7 @@ export const inventoryUpdateSchema = z.object({
   id: z.string().optional(),
   item_id: z.string().optional(),
   location_id: z.string().optional().nullable(),
-  quantity: z.coerce.number().optional(),
+  quantity: z.number().optional(),
   reason: z.string().optional().nullable(),
   unit_id: z.string().optional().nullable(),
 });
@@ -111,37 +111,37 @@ export const inventoryRelationshipsSchema = z.tuple([
 ]);
 
 export const itemPricesRowSchema = z.object({
-  buying_price: z.coerce.number().nullable(),
+  buying_price: z.number().nullable(),
   created_at: z.string(),
   deleted: z.boolean(),
   id: z.string(),
   item_id: z.string().nullable(),
   price_list_id: z.string().nullable(),
-  selling_price: z.coerce.number().nullable(),
+  selling_price: z.number().nullable(),
   unit_id: z.string().nullable(),
   updated_at: z.string(),
 });
 
 export const itemPricesInsertSchema = z.object({
-  buying_price: z.coerce.number().optional().nullable(),
+  buying_price: z.number().optional().nullable(),
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
   id: z.string().optional(),
   item_id: z.string().optional().nullable(),
   price_list_id: z.string().optional().nullable(),
-  selling_price: z.coerce.number().optional().nullable(),
+  selling_price: z.number().optional().nullable(),
   unit_id: z.string().optional().nullable(),
   updated_at: z.string().optional(),
 });
 
 export const itemPricesUpdateSchema = z.object({
-  buying_price: z.coerce.number().optional().nullable(),
+  buying_price: z.number().optional().nullable(),
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
   id: z.string().optional(),
   item_id: z.string().optional().nullable(),
   price_list_id: z.string().optional().nullable(),
-  selling_price: z.coerce.number().optional().nullable(),
+  selling_price: z.number().optional().nullable(),
   unit_id: z.string().optional().nullable(),
   updated_at: z.string().optional(),
 });
@@ -171,6 +171,7 @@ export const itemPricesRelationshipsSchema = z.tuple([
 ]);
 
 export const itemUnitsRowSchema = z.object({
+  conversion_factor: z.number(),
   created_at: z.string(),
   deleted: z.boolean(),
   id: z.string(),
@@ -181,6 +182,7 @@ export const itemUnitsRowSchema = z.object({
 });
 
 export const itemUnitsInsertSchema = z.object({
+  conversion_factor: z.number().optional(),
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
   id: z.string().optional(),
@@ -191,6 +193,7 @@ export const itemUnitsInsertSchema = z.object({
 });
 
 export const itemUnitsUpdateSchema = z.object({
+  conversion_factor: z.number().optional(),
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
   id: z.string().optional(),
@@ -217,6 +220,18 @@ export const itemUnitsRelationshipsSchema = z.tuple([
   }),
 ]);
 
+export const itemUnitSchema = z.object({
+  item_id: z.string(),
+  unit_id: z.string().trim().min(5),
+}) 
+
+export const itemUnitPriceSchema = z.object({
+  item_id: z.string(),
+  unit_id: z.string(),
+  buying_price: z.coerce.number().gt(0),
+  selling_price: z.coerce.number().gt(0),
+}) 
+
 export const itemsRowSchema = z.object({
   barcode: z.string().nullable(),
   category_id: z.string().nullable(),
@@ -227,19 +242,8 @@ export const itemsRowSchema = z.object({
   name: z.string(),
   sku: z.string(),
   updated_at: z.string(),
-  units: z.array(itemUnitsInsertSchema).optional()
-});
-
-export const itemsFormSchema = z.object({
-  barcode: z.string().nullable(),
-  category_id: z.string().nullable(),
-  created_at: z.string(),
-  deleted: z.boolean(),
-  id: z.string(),
-  image_url: z.string().nullable(),
-  name: z.string(),
-  sku: z.string(),
-  updated_at: z.string(),
+  units: z.array(itemUnitSchema).optional(),
+  prices: z.array(itemUnitPriceSchema).optional()
 });
 
 export const itemsInsertSchema = z.object({
@@ -308,39 +312,39 @@ export const locationsRelationshipsSchema = z.tuple([]);
 export const orderItemsRowSchema = z.object({
   created_at: z.string(),
   deleted: z.boolean(),
-  discount: z.coerce.number().nullable(),
+  discount: z.number().nullable(),
   id: z.string(),
   item_id: z.string().nullable(),
   order_id: z.string().nullable(),
-  quantity: z.coerce.number(),
+  quantity: z.number(),
   unit_id: z.string().nullable(),
-  unit_price: z.coerce.number(),
+  unit_price: z.number(),
   updated_at: z.string(),
 });
 
 export const orderItemsInsertSchema = z.object({
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
-  discount: z.coerce.number().optional().nullable(),
+  discount: z.number().optional().nullable(),
   id: z.string().optional(),
   item_id: z.string().optional().nullable(),
   order_id: z.string().optional().nullable(),
-  quantity: z.coerce.number(),
+  quantity: z.number(),
   unit_id: z.string().optional().nullable(),
-  unit_price: z.coerce.number(),
+  unit_price: z.number(),
   updated_at: z.string().optional(),
 });
 
 export const orderItemsUpdateSchema = z.object({
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
-  discount: z.coerce.number().optional().nullable(),
+  discount: z.number().optional().nullable(),
   id: z.string().optional(),
   item_id: z.string().optional().nullable(),
   order_id: z.string().optional().nullable(),
-  quantity: z.coerce.number().optional(),
+  quantity: z.number().optional(),
   unit_id: z.string().optional().nullable(),
-  unit_price: z.coerce.number().optional(),
+  unit_price: z.number().optional(),
   updated_at: z.string().optional(),
 });
 
@@ -431,7 +435,7 @@ export const peopleRowSchema = z.object({
   deleted: z.boolean(),
   email: z.string(),
   first_name: z.string(),
-  gender: z.coerce.number().nullable(),
+  gender: z.number().nullable(),
   id: z.string(),
   last_name: z.string(),
   phone_number: z.string(),
@@ -450,7 +454,7 @@ export const peopleInsertSchema = z.object({
   deleted: z.boolean().optional(),
   email: z.string(),
   first_name: z.string(),
-  gender: z.coerce.number().optional().nullable(),
+  gender: z.number().optional().nullable(),
   id: z.string().optional(),
   last_name: z.string(),
   phone_number: z.string(),
@@ -469,7 +473,7 @@ export const peopleUpdateSchema = z.object({
   deleted: z.boolean().optional(),
   email: z.string().optional(),
   first_name: z.string().optional(),
-  gender: z.coerce.number().optional().nullable(),
+  gender: z.number().optional().nullable(),
   id: z.string().optional(),
   last_name: z.string().optional(),
   phone_number: z.string().optional(),
@@ -546,55 +550,9 @@ export const priceListsUpdateSchema = z.object({
 
 export const priceListsRelationshipsSchema = z.tuple([]);
 
-export const unitConversionsRowSchema = z.object({
-  base_unit_id: z.string().nullable(),
-  conversion_factor: z.coerce.number(),
-  created_at: z.string(),
-  deleted: z.boolean(),
-  id: z.string(),
-  unit_id: z.string().nullable(),
-  updated_at: z.string(),
-});
-
-export const unitConversionsInsertSchema = z.object({
-  base_unit_id: z.string().optional().nullable(),
-  conversion_factor: z.coerce.number(),
-  created_at: z.string().optional(),
-  deleted: z.boolean().optional(),
-  id: z.string().optional(),
-  unit_id: z.string().optional().nullable(),
-  updated_at: z.string().optional(),
-});
-
-export const unitConversionsUpdateSchema = z.object({
-  base_unit_id: z.string().optional().nullable(),
-  conversion_factor: z.coerce.number().optional(),
-  created_at: z.string().optional(),
-  deleted: z.boolean().optional(),
-  id: z.string().optional(),
-  unit_id: z.string().optional().nullable(),
-  updated_at: z.string().optional(),
-});
-
-export const unitConversionsRelationshipsSchema = z.tuple([
-  z.object({
-    foreignKeyName: z.literal("unit_conversions_base_unit_id_fkey"),
-    columns: z.tuple([z.literal("base_unit_id")]),
-    isOneToOne: z.literal(false),
-    referencedRelation: z.literal("units"),
-    referencedColumns: z.tuple([z.literal("id")]),
-  }),
-  z.object({
-    foreignKeyName: z.literal("unit_conversions_unit_id_fkey"),
-    columns: z.tuple([z.literal("unit_id")]),
-    isOneToOne: z.literal(false),
-    referencedRelation: z.literal("units"),
-    referencedColumns: z.tuple([z.literal("id")]),
-  }),
-]);
-
 export const unitsRowSchema = z.object({
   base_unit: z.boolean().nullable(),
+  category: z.string().nullable(),
   created_at: z.string(),
   deleted: z.boolean(),
   id: z.string(),
@@ -605,6 +563,7 @@ export const unitsRowSchema = z.object({
 
 export const unitsInsertSchema = z.object({
   base_unit: z.boolean().optional().nullable(),
+  category: z.string().optional().nullable(),
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
   id: z.string().optional(),
@@ -615,6 +574,7 @@ export const unitsInsertSchema = z.object({
 
 export const unitsUpdateSchema = z.object({
   base_unit: z.boolean().optional().nullable(),
+  category: z.string().optional().nullable(),
   created_at: z.string().optional(),
   deleted: z.boolean().optional(),
   id: z.string().optional(),

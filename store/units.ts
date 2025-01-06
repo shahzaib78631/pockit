@@ -22,7 +22,7 @@ export const unitsTable$ = observable(
         infinite: true, // Retry changes with exponential backoff
       },
       // Sync only diffs
-      changesSince: 'last-sync',
+      changesSince: 'all',
     })
   );
 

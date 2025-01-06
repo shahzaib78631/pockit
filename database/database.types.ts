@@ -161,6 +161,7 @@ export type Database = {
       }
       item_units: {
         Row: {
+          conversion_factor: number
           created_at: string
           deleted: boolean
           id: string
@@ -170,6 +171,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          conversion_factor?: number
           created_at?: string
           deleted?: boolean
           id?: string
@@ -179,6 +181,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          conversion_factor?: number
           created_at?: string
           deleted?: boolean
           id?: string
@@ -506,54 +509,10 @@ export type Database = {
         }
         Relationships: []
       }
-      unit_conversions: {
-        Row: {
-          base_unit_id: string | null
-          conversion_factor: number
-          created_at: string
-          deleted: boolean
-          id: string
-          unit_id: string | null
-          updated_at: string
-        }
-        Insert: {
-          base_unit_id?: string | null
-          conversion_factor: number
-          created_at?: string
-          deleted?: boolean
-          id?: string
-          unit_id?: string | null
-          updated_at?: string
-        }
-        Update: {
-          base_unit_id?: string | null
-          conversion_factor?: number
-          created_at?: string
-          deleted?: boolean
-          id?: string
-          unit_id?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "unit_conversions_base_unit_id_fkey"
-            columns: ["base_unit_id"]
-            isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "unit_conversions_unit_id_fkey"
-            columns: ["unit_id"]
-            isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       units: {
         Row: {
           base_unit: boolean | null
+          category: string | null
           created_at: string
           deleted: boolean
           id: string
@@ -563,6 +522,7 @@ export type Database = {
         }
         Insert: {
           base_unit?: boolean | null
+          category?: string | null
           created_at?: string
           deleted?: boolean
           id?: string
@@ -572,6 +532,7 @@ export type Database = {
         }
         Update: {
           base_unit?: boolean | null
+          category?: string | null
           created_at?: string
           deleted?: boolean
           id?: string

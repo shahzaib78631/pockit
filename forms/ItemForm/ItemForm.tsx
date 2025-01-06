@@ -11,7 +11,7 @@ import useItemForm from "@/hooks/useItemForm";
 import { getString } from "@/strings/translations";
 import { useThemeContext } from "@/context/ThemeContext";
 import { useAppContext } from "@/context/AppContext";
-import { Show } from "@legendapp/state/react";
+import { For, Show } from "@legendapp/state/react";
 import { Category, Item, Unit } from "@/types/types";
 import { Barcode } from "expo-barcode-generator";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
@@ -23,6 +23,9 @@ import { getColorWithAlpha } from "@/utils/colors";
 import Seperator from "@/components/Seperator";
 import { useFieldArray } from "react-hook-form";
 import { UnitsSheet } from "@/components/sheets";
+import UnitsList from "@/components/lists/UnitsList";
+import LabeledBorder from "@/components/LabeledBorder";
+import { generateId } from "@/database/SupaLegend";
 
 type ItemFormProps = {
   edit: boolean;
@@ -64,8 +67,20 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
     keyName: "key",
   });
 
+  // Manage prices with react-hook-form
+  const {
+    fields: prices,
+    append: appendPrices,
+    remove: removePrices,
+  } = useFieldArray({
+    control: control,
+    name: "prices",
+    keyName: "key",
+  });
+
   const barcode = watch("barcode");
   const categoryId = watch("category_id");
+  const unitsIds = watch("units");
 
   const handleDisplayAddCategorySheet = () => {
     SheetManager.show("AddCategorySheet", {
@@ -76,38 +91,59 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
   };
 
   const handleItemUnitSelection = (unit: Unit, checked?: boolean) => {
-    console.log(unit, checked);
+    const unitId = getValues("id");
+
     if (checked) {
       removeUnits(units.findIndex((i) => i.unit_id === unit.id));
+      removePrices(prices.findIndex((i) => i.unit_id === unit.id));
     } else {
-      appendUnits({ unit_id: unit.id, item_id: getValues("id") });
+      appendUnits({ unit_id: unit.id, item_id: unitId });
+      appendPrices({
+        unit_id: unit.id,
+        item_id: unitId,
+        buying_price: -1,
+        selling_price: -1,
+      });
     }
   };
 
   const handleSubmitForm = () => {
-    if (edit) {
-      handleSubmit(updateItem)();
-    } else {
-      handleSubmit(createItem)();
-    }
+    handleSubmit(() => {})();
+    // if (edit) {
+    //   handleSubmit(updateItem)();
+    // } else {
+    //   handleSubmit(createItem)();
+    // }
   };
 
-  useEffect(() => {
-    if (SheetManager.get("UnitsSheet")?.current?.isOpen()) {
-      handleDisplayUnitsSheet();
-    }
-  }, [units]);
+  console.log(errors, "ERRORS");
+
+  // useEffect(() => {
+  //   // As soon as the units array changes, we want to display the units sheet to refresh the payload
+  //   // Due to currently limitations in react action sheet
+  //   if (SheetManager.get("UnitsSheet")?.current?.isOpen()) {
+  //     handleDisplayUnitsSheet();
+  //   }
+  // }, [units]);
 
   const handleDisplayUnitsSheet = () => {
-    // ref.current?.show();
-    SheetManager.show("UnitsSheet", {
-      payload: {
-        value: units
-          .map((i) => i.unit_id)
-          .filter((id): id is string => id !== null && id !== undefined),
-        multiple: true,
-        onChange: handleItemUnitSelection,
-      },
+    const itemId = getValues("id");
+    // // Get the unit ids from the units array
+    // const unitIds = units.map((i) => i.unit_id) as string[];
+    // // Display the units sheet
+    // SheetManager.show("UnitsSheet", {
+    //   payload: {
+    //     value: unitIds,
+    //     multiple: true,
+    //     onChange: handleItemUnitSelection,
+    //   },
+    // });
+    appendUnits({ item_id: itemId, unit_id: "" });
+    appendPrices({
+      unit_id: "",
+      item_id: itemId,
+      buying_price: null,
+      selling_price: null,
     });
   };
 
@@ -206,7 +242,7 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
           )}
         />
         <Seperator />
-        {/* Paid for Section */}
+        {/* Units Section */}
         <View style={[commonStyles.rowSpaceBetween, commonStyles.gapSm]}>
           <View
             style={[
@@ -235,6 +271,89 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
             />
           </ThemedButton>
         </View>
+
+        <Show if={unitsIds?.length}>
+          <View style={[commonStyles.gapLg, commonStyles.marginVerticalMd]}>
+            {unitsIds?.map((unit, index) => (
+              <LabeledBorder
+                key={index}
+                label={getString("items.unit.count", { count: index + 1 })}
+              >
+                <FormField
+                  control={control}
+                  label={getString("items.unit.label")}
+                  name={`units.${index}.unit_id`}
+                  editable={false}
+                  type="picker"
+                  value={store$.UnitsStore.getUnitName(unit?.unit_id as string)}
+                  error={errors?.units?.[index]?.unit_id}
+                  placeholder={getString("items.unit.placeholder")}
+                  pickerSheetTitle={getString("items.unit.label")}
+                  fieldValue={(value: string) =>
+                    store$.UnitsStore.getUnitName(value)
+                  }
+                  renderPickerContentComponent={
+                    <UnitsList
+                      onChange={(newUnit: Unit) => {
+                        setValue(`units.${index}.unit_id`, newUnit.id);
+                      }}
+                      value={unit.unit_id}
+                    />
+                  }
+                  prepend={
+                    <ThemedMaterialIcons
+                      size={18}
+                      name="category"
+                      color="onSurface"
+                    />
+                  }
+                  append={
+                    <ThemedMaterialCommunityIcons
+                      size={18}
+                      name="delete"
+                      color="error"
+                    />
+                  }
+                />
+                <View style={[commonStyles.gapMd, commonStyles.rowAlignCenter]}>
+                  <View style={commonStyles.flex1}>
+                    <FormField
+                      control={control}
+                      label={getString("items.buying_price.label")}
+                      name={`prices.${index}.buying_price`}
+                      error={errors.prices?.[index]?.buying_price}
+                      placeholder={getString("items.buying_price.placeholder")}
+                      prepend={
+                        <ThemedMaterialCommunityIcons
+                          size={18}
+                          name="cash"
+                          color="onSurface"
+                        />
+                      }
+                    />
+                  </View>
+                  <View style={commonStyles.flex1}>
+                    <FormField
+                      control={control}
+                      label={getString("items.selling_price.label")}
+                      name={`prices.${index}.selling_price`}
+                      error={errors.prices?.[index]?.selling_price}
+                      placeholder={getString("items.selling_price.placeholder")}
+                      prepend={
+                        <ThemedMaterialCommunityIcons
+                          size={18}
+                          name="cash"
+                          color="onSurface"
+                        />
+                      }
+                    />
+                  </View>
+                </View>
+              </LabeledBorder>
+            ))}
+          </View>
+        </Show>
+
         <Seperator />
       </View>
       <ThemedButton

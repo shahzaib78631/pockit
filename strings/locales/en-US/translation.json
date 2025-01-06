@@ -144,7 +144,9 @@
     },
     "unit": {
       "label": "Unit",
-      "description": "Add units for this item"
+      "count": "Unit {{count}}",
+      "description": "Add units for this item",
+      "placeholder": "Select unit"
     },
     "current_stock": {
       "label": "Quantity"

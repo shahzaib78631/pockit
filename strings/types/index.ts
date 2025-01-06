@@ -95,6 +95,8 @@ export interface StringMap {
   "items.selling_price.placeholder": string;
   "items.whole.label": string;
   "items.unit.label": string;
+  "items.unit.count": string;
+  "items.unit.placeholder": string;
   "items.unit.description": string;
   "items.sub_units_count.label": string;
   "items.sub_units_count.placeholder": string;

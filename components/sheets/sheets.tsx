@@ -9,7 +9,6 @@ import {
   AddUnitSheet,
 } from "./";
 import { Categories, Category, Unit } from "@/types/types";
-import { PickerFieldProps } from "../form/FormField/FormField";
 import { ReactNode } from "react";
 
 registerSheet("AddCategorySheet", AddCategorySheet);
