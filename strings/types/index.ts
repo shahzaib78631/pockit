@@ -94,12 +94,18 @@ export interface StringMap {
   "items.selling_price.label": string;
   "items.selling_price.placeholder": string;
   "items.whole.label": string;
+  "items.is_base_unit.label": string;
+  "items.is_base_unit.placeholder": string;
   "items.unit.label": string;
   "items.unit.count": string;
   "items.unit.placeholder": string;
   "items.unit.description": string;
   "items.sub_units_count.label": string;
   "items.sub_units_count.placeholder": string;
+  "items.sub_units_count.description": string;
+  "items.conversion_factor.label": string;
+  "items.conversion_factor.placeholder": string;
+  "items.conversion_factor.description": string;
   "items.is_active.label": string;
   "items.current_stock.label": string;
   "items.metadata.label": string;

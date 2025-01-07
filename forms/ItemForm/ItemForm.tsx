@@ -6,43 +6,42 @@ import {
   ThemedMaterialIcons,
   ThemedText,
 } from "@/components/ui";
-import { FormField } from "@/components/form";
+import { ErrorMessage, FormField } from "@/components/form";
 import useItemForm from "@/hooks/useItemForm";
 import { getString } from "@/strings/translations";
 import { useThemeContext } from "@/context/ThemeContext";
 import { useAppContext } from "@/context/AppContext";
-import { For, Show } from "@legendapp/state/react";
+import { Show } from "@legendapp/state/react";
 import { Category, Item, Unit } from "@/types/types";
 import { Barcode } from "expo-barcode-generator";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { CategoriesList } from "@/components/lists";
-
-import { SheetManager, useSheetRef } from "react-native-actions-sheet";
-import useItemUnitForm from "@/hooks/useItemUnitsForm";
+import { SheetManager } from "react-native-actions-sheet";
 import { getColorWithAlpha } from "@/utils/colors";
 import Seperator from "@/components/Seperator";
 import { useFieldArray } from "react-hook-form";
-import { UnitsSheet } from "@/components/sheets";
 import UnitsList from "@/components/lists/UnitsList";
 import LabeledBorder from "@/components/LabeledBorder";
-import { generateId } from "@/database/SupaLegend";
 
 type ItemFormProps = {
-  edit: boolean;
-  item: Item | null;
+  edit: boolean; // Indicates whether the form is in edit mode
+  item: Item | null; // The item being edited or created
 };
 
+// Wrapper component for themed barcode generation
 const ThemedBarcode = withUnistyles(Barcode, (theme) => ({
   options: {
-    background: theme.colors.background,
-    lineColor: theme.colors.onBackground,
+    background: theme.colors.background, // Use theme-based background
+    lineColor: theme.colors.onBackground, // Use theme-based line color
   },
 }));
 
+// Main form component for handling item creation/editing
 const ItemForm = ({ edit, item }: ItemFormProps) => {
-  const { store$ } = useAppContext();
-  const { commonStyles } = useThemeContext();
+  const { store$ } = useAppContext(); // Access global state using context
+  const { commonStyles } = useThemeContext(); // Access theme-based styles
 
+  // Initialize form state and methods
   const {
     control,
     errors,
@@ -52,36 +51,40 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
     createItem,
     setValue,
     getValues,
-  } = useItemForm({
-    item,
-  });
+    setError,
+  } = useItemForm({ item });
 
-  // Manage units with react-hook-form
+  // Manage units using `react-hook-form`'s `useFieldArray`
   const {
     fields: units,
     append: appendUnits,
     remove: removeUnits,
   } = useFieldArray({
     control: control,
-    name: "units",
-    keyName: "key",
+    name: "units", // Name of the field in the form schema
+    keyName: "key", // Unique key for React lists
   });
 
-  // Manage prices with react-hook-form
+  // Manage prices using `react-hook-form`'s `useFieldArray`
   const {
     fields: prices,
     append: appendPrices,
     remove: removePrices,
   } = useFieldArray({
     control: control,
-    name: "prices",
-    keyName: "key",
+    name: "prices", // Name of the field in the form schema
+    keyName: "key", // Unique key for React lists
   });
 
-  const barcode = watch("barcode");
-  const categoryId = watch("category_id");
-  const unitsIds = watch("units");
+  // Watch specific form values for reactive behavior
+  const [saleType, unitsIds, barcode, categoryId] = watch([
+    "sale_type", // Selling type: whole/unit
+    "units", // Units array
+    "barcode", // Barcode string
+    "category_id", // Selected category ID
+  ]);
 
+  // Function to display the category selection sheet
   const handleDisplayAddCategorySheet = () => {
     SheetManager.show("AddCategorySheet", {
       payload: {
@@ -90,14 +93,22 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
     });
   };
 
+  // Handle unit selection for the item
   const handleItemUnitSelection = (unit: Unit, checked?: boolean) => {
     const unitId = getValues("id");
 
     if (checked) {
+      // Remove unit and associated prices if already selected
       removeUnits(units.findIndex((i) => i.unit_id === unit.id));
       removePrices(prices.findIndex((i) => i.unit_id === unit.id));
     } else {
-      appendUnits({ unit_id: unit.id, item_id: unitId });
+      // Add unit and default prices if not selected
+      appendUnits({
+        unit_id: unit.id,
+        item_id: unitId,
+        is_base_unit: false,
+        conversion_factor: 0,
+      });
       appendPrices({
         unit_id: unit.id,
         item_id: unitId,
@@ -107,53 +118,79 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
     }
   };
 
+  // Submit handler for the form
   const handleSubmitForm = () => {
-    handleSubmit(() => {})();
-    // if (edit) {
-    //   handleSubmit(updateItem)();
-    // } else {
-    //   handleSubmit(createItem)();
-    // }
+    if (edit) {
+      handleSubmit(updateItem)(); // Call updateItem if in edit mode
+    } else {
+      handleSubmit(createItem)(); // Call createItem otherwise
+    }
   };
 
-  console.log(errors, "ERRORS");
-
-  // useEffect(() => {
-  //   // As soon as the units array changes, we want to display the units sheet to refresh the payload
-  //   // Due to currently limitations in react action sheet
-  //   if (SheetManager.get("UnitsSheet")?.current?.isOpen()) {
-  //     handleDisplayUnitsSheet();
-  //   }
-  // }, [units]);
-
+  // Handle display of the units sheet for adding units
   const handleDisplayUnitsSheet = () => {
     const itemId = getValues("id");
-    // // Get the unit ids from the units array
-    // const unitIds = units.map((i) => i.unit_id) as string[];
-    // // Display the units sheet
-    // SheetManager.show("UnitsSheet", {
-    //   payload: {
-    //     value: unitIds,
-    //     multiple: true,
-    //     onChange: handleItemUnitSelection,
-    //   },
-    // });
-    appendUnits({ item_id: itemId, unit_id: "" });
+    appendUnits({
+      item_id: itemId,
+      unit_id: "",
+      is_base_unit: false,
+      conversion_factor: 0,
+    });
     appendPrices({
       unit_id: "",
       item_id: itemId,
-      buying_price: null,
-      selling_price: null,
+      buying_price: 0,
+      selling_price: 0,
     });
+  };
+
+  const calculateNewConversionFactor = (
+    unitIndex: number,
+    newBaseUnitIndex: number
+  ): number => {
+    const previousFactor =
+      getValues(`units.${unitIndex}.conversion_factor`) || 1;
+    const newBaseFactor =
+      getValues(`units.${newBaseUnitIndex}.conversion_factor`) || 1;
+
+    // Adjust conversion factor relative to the new base unit
+    return previousFactor / newBaseFactor;
+  };
+
+  const updatePrices = (
+    unitIndex: number,
+    baseUnitIndex: number,
+    conversionFactor: number
+  ) => {
+    const baseBuyingPrice =
+      getValues(`prices.${baseUnitIndex}.buying_price`) || 0;
+    const baseSellingPrice =
+      getValues(`prices.${baseUnitIndex}.selling_price`) || 0;
+
+    // Calculate new prices for the unit based on the conversion factor
+    const newBuyingPrice = baseBuyingPrice * conversionFactor;
+    const newSellingPrice = baseSellingPrice * conversionFactor;
+
+    // Set the calculated prices for the unit
+    setValue(
+      `prices.${unitIndex}.buying_price`,
+      parseFloat(newBuyingPrice.toFixed(2))
+    );
+    setValue(
+      `prices.${unitIndex}.selling_price`,
+      parseFloat(newSellingPrice.toFixed(2))
+    );
   };
 
   return (
     <View style={[commonStyles.gapLg, commonStyles.marginBottomXxl]}>
+      {/* Title */}
       <ThemedText fontSize="xxl" type="medium" color="onBackground">
         Item Info
       </ThemedText>
 
       <View style={commonStyles.gapVerticalSm}>
+        {/* Item Name Field */}
         <FormField
           control={control}
           label={getString("items.name.label")}
@@ -164,6 +201,8 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
             <ThemedMaterialIcons size={18} name="mode-edit" color="onSurface" />
           }
         />
+
+        {/* SKU Field */}
         <FormField
           control={control}
           label={getString("items.sku.label")}
@@ -178,6 +217,8 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
             />
           }
         />
+
+        {/* Barcode Field */}
         <FormField
           control={control}
           label={getString("items.barcode.label")}
@@ -193,12 +234,14 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
           }
         />
 
+        {/* Barcode Preview */}
         <Show if={barcode}>
           <View style={commonStyles.alignCenter}>
             <ThemedBarcode value={barcode} rotation={-5} />
           </View>
         </Show>
 
+        {/* Category Picker */}
         <FormField
           control={control}
           label={getString("items.category.label")}
@@ -241,121 +284,280 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
             </ThemedButton>
           )}
         />
-        <Seperator />
+
+        {/* Sale Type Selector */}
+        <FormField
+          control={control}
+          name="sale_type"
+          type="segmented"
+          error={errors.sale_type}
+          values={["whole", "unit"]}
+          labels={[
+            getString("items.selling_type.whole"),
+            getString("items.selling_type.unit"),
+          ]}
+          label={getString("items.selling_type.label")}
+          helpText={getString("items.selling_type.placeholder")}
+        />
+
         {/* Units Section */}
-        <View style={[commonStyles.rowSpaceBetween, commonStyles.gapSm]}>
-          <View
-            style={[
-              commonStyles.flex1,
-              commonStyles.gapSm,
-              commonStyles.col,
-              commonStyles.justifyBetween,
-            ]}
-          >
-            <ThemedText type="bold">{getString("items.unit.label")}</ThemedText>
-            <ThemedText type="light" fontSize="sm" style={styles.description}>
-              {getString("items.unit.description")}
-            </ThemedText>
-          </View>
-          <ThemedButton
-            borderRadius="lg"
-            fontSize="sm"
-            variant="primary"
-            onPress={handleDisplayUnitsSheet}
-            buttonStyle={commonStyles.paddingMd}
-          >
-            <ThemedMaterialCommunityIcons
-              name="plus"
-              size={18}
-              color="onPrimary"
-            />
-          </ThemedButton>
-        </View>
+        <Show if={saleType === "unit"}>
+          <Seperator />
 
-        <Show if={unitsIds?.length}>
-          <View style={[commonStyles.gapLg, commonStyles.marginVerticalMd]}>
-            {unitsIds?.map((unit, index) => (
-              <LabeledBorder
-                key={index}
-                label={getString("items.unit.count", { count: index + 1 })}
-              >
-                <FormField
-                  control={control}
-                  label={getString("items.unit.label")}
-                  name={`units.${index}.unit_id`}
-                  editable={false}
-                  type="picker"
-                  value={store$.UnitsStore.getUnitName(unit?.unit_id as string)}
-                  error={errors?.units?.[index]?.unit_id}
-                  placeholder={getString("items.unit.placeholder")}
-                  pickerSheetTitle={getString("items.unit.label")}
-                  fieldValue={(value: string) =>
-                    store$.UnitsStore.getUnitName(value)
-                  }
-                  renderPickerContentComponent={
-                    <UnitsList
-                      onChange={(newUnit: Unit) => {
-                        setValue(`units.${index}.unit_id`, newUnit.id);
-                      }}
-                      value={unit.unit_id}
-                    />
-                  }
-                  prepend={
-                    <ThemedMaterialIcons
-                      size={18}
-                      name="category"
-                      color="onSurface"
-                    />
-                  }
-                  append={
-                    <ThemedMaterialCommunityIcons
-                      size={18}
-                      name="delete"
-                      color="error"
-                    />
-                  }
-                />
-                <View style={[commonStyles.gapMd, commonStyles.rowAlignCenter]}>
-                  <View style={commonStyles.flex1}>
-                    <FormField
-                      control={control}
-                      label={getString("items.buying_price.label")}
-                      name={`prices.${index}.buying_price`}
-                      error={errors.prices?.[index]?.buying_price}
-                      placeholder={getString("items.buying_price.placeholder")}
-                      prepend={
-                        <ThemedMaterialCommunityIcons
-                          size={18}
-                          name="cash"
-                          color="onSurface"
-                        />
-                      }
-                    />
-                  </View>
-                  <View style={commonStyles.flex1}>
-                    <FormField
-                      control={control}
-                      label={getString("items.selling_price.label")}
-                      name={`prices.${index}.selling_price`}
-                      error={errors.prices?.[index]?.selling_price}
-                      placeholder={getString("items.selling_price.placeholder")}
-                      prepend={
-                        <ThemedMaterialCommunityIcons
-                          size={18}
-                          name="cash"
-                          color="onSurface"
-                        />
-                      }
-                    />
-                  </View>
-                </View>
-              </LabeledBorder>
-            ))}
+          {/* Units Section Header */}
+          <View style={[commonStyles.rowSpaceBetween, commonStyles.gapSm]}>
+            <View
+              style={[
+                commonStyles.flex1,
+                commonStyles.gapSm,
+                commonStyles.col,
+                commonStyles.justifyBetween,
+              ]}
+            >
+              <ThemedText type="bold">
+                {getString("items.unit.label")}
+              </ThemedText>
+              <ThemedText type="light" fontSize="sm" style={styles.description}>
+                {getString("items.unit.description")}
+              </ThemedText>
+            </View>
+            <ThemedButton
+              borderRadius="lg"
+              fontSize="sm"
+              variant="primary"
+              onPress={handleDisplayUnitsSheet} // Add a new unit
+              buttonStyle={commonStyles.paddingMd}
+            >
+              <ThemedMaterialCommunityIcons
+                name="plus"
+                size={18}
+                color="onPrimary"
+              />
+            </ThemedButton>
           </View>
+
+          {/* Display List of Units if Available */}
+          <Show if={unitsIds?.length}>
+            <View style={[commonStyles.gapLg, commonStyles.marginVerticalMd]}>
+              {unitsIds?.map((unit, index) => (
+                <LabeledBorder
+                  key={index}
+                  label={getString("items.unit.count", { count: index + 1 })} // Dynamic unit label
+                  borderStyle={commonStyles.gapMd}
+                >
+                  {/* Unit Picker Field */}
+                  <FormField
+                    control={control}
+                    label={getString("items.unit.label")}
+                    name={`units.${index}.unit_id`}
+                    editable={false} // Unit ID cannot be manually edited
+                    type="picker"
+                    value={store$.UnitsStore.getUnitName(
+                      unit?.unit_id as string
+                    )} // Fetch unit name
+                    error={errors?.units?.[index]?.unit_id}
+                    placeholder={getString("items.unit.placeholder")}
+                    pickerSheetTitle={getString("items.unit.label")}
+                    fieldValue={(value: string) =>
+                      store$.UnitsStore.getUnitName(value)
+                    }
+                    renderPickerContentComponent={
+                      <UnitsList
+                        onChange={(newUnit: Unit) => {
+                          setValue(`units.${index}.unit_id`, newUnit.id); // Set selected unit
+                          setError(`units.${index}.unit_id`, { message: "" }); // Clear errors
+                        }}
+                        value={unit.unit_id}
+                      />
+                    }
+                    prepend={
+                      <ThemedMaterialIcons
+                        size={18}
+                        name="category"
+                        color="onSurface"
+                      />
+                    }
+                    append={
+                      <ThemedButton
+                        variant="text"
+                        buttonStyle={commonStyles.paddingNone}
+                        onPress={
+                          () =>
+                            handleItemUnitSelection(
+                              unit as unknown as Unit,
+                              true
+                            ) // Remove unit
+                        }
+                      >
+                        <ThemedMaterialCommunityIcons
+                          size={18}
+                          name="delete"
+                          color="error"
+                        />
+                      </ThemedButton>
+                    }
+                  />
+
+                  {/* Prices Section for Each Unit */}
+                  <View
+                    style={[commonStyles.gapMd, commonStyles.rowAlignCenter]}
+                  >
+                    {/* Buying Price Field */}
+                    <View
+                      style={[commonStyles.flex1, commonStyles.alignSelfStart]}
+                    >
+                      <FormField
+                        control={control}
+                        label={getString("items.buying_price.label")}
+                        name={`prices.${index}.buying_price`}
+                        error={errors.prices?.[index]?.buying_price}
+                        placeholder={getString(
+                          "items.buying_price.placeholder"
+                        )}
+                        prepend={
+                          <ThemedMaterialCommunityIcons
+                            size={18}
+                            name="cash"
+                            color="onSurface"
+                          />
+                        }
+                        interceptOnChange={(value, onChange) => {
+                          onChange(value);
+                          if (unit.is_base_unit) {
+                            unitsIds.forEach((unit, unitIndex) => {
+                              if (unitIndex !== index) {
+                                updatePrices(
+                                  unitIndex,
+                                  index,
+                                  unit.conversion_factor || 1
+                                );
+                              }
+                            });
+                          }
+                        }}
+                      />
+                    </View>
+
+                    {/* Selling Price Field */}
+                    <View
+                      style={[commonStyles.flex1, commonStyles.alignSelfStart]}
+                    >
+                      <FormField
+                        control={control}
+                        label={getString("items.selling_price.label")}
+                        name={`prices.${index}.selling_price`}
+                        error={errors.prices?.[index]?.selling_price}
+                        placeholder={getString(
+                          "items.selling_price.placeholder"
+                        )}
+                        prepend={
+                          <ThemedMaterialCommunityIcons
+                            size={18}
+                            name="cash"
+                            color="onSurface"
+                          />
+                        }
+                        interceptOnChange={(value, onChange) => {
+                          onChange(value);
+                          if (unit.is_base_unit) {
+                            // Reset conversion factors of all other units relative to the new base unit
+                            unitsIds.forEach((unit, unitIndex) => {
+                              if (unitIndex !== index) {
+                                updatePrices(
+                                  unitIndex,
+                                  index,
+                                  unit.conversion_factor || 1
+                                );
+                              }
+                            });
+                          }
+                        }}
+                      />
+                    </View>
+                  </View>
+
+                  {/* Base Unit Checkbox */}
+                  <FormField
+                    control={control}
+                    name={`units.${index}.is_base_unit`}
+                    type="checkbox"
+                    error={errors?.units?.[index]?.is_base_unit}
+                    label={getString("items.is_base_unit.placeholder")}
+                    interceptOnChange={(value, onChange) => {
+                      const previousBaseUnitIndex = unitsIds.findIndex(
+                        (unit) => unit.is_base_unit
+                      );
+
+                      if (value) {
+                        // If a new base unit is selected:
+                        if (previousBaseUnitIndex >= 0) {
+                          // Reset the previous base unit's is_base_unit and conversion_factor
+                          setValue(
+                            `units.${previousBaseUnitIndex}.is_base_unit`,
+                            false
+                          );
+                          setValue(
+                            `units.${previousBaseUnitIndex}.conversion_factor`,
+                            0
+                          );
+                        }
+
+                        // Reset conversion factors of all other units relative to the new base unit
+                        unitsIds.forEach((unit, unitIndex) => {
+                          if (unitIndex !== index) {
+                            setValue(
+                              `units.${unitIndex}.conversion_factor`,
+                              calculateNewConversionFactor(unitIndex, index)
+                            );
+                          }
+                        });
+                      } else {
+                        // If the current base unit is unchecked, reset its conversion_factor to 0
+                        setValue(`units.${index}.conversion_factor`, 0);
+                      }
+
+                      // Update the is_base_unit state for the current checkbox
+                      onChange(value);
+                    }}
+                  />
+
+                  {/* Conversion Factor Field (Only for Non-Base Units) */}
+                  <Show if={!unit?.is_base_unit}>
+                    <FormField
+                      control={control}
+                      label={getString("items.conversion_factor.label")}
+                      name={`units.${index}.conversion_factor`}
+                      error={errors.units?.[index]?.conversion_factor}
+                      placeholder={getString(
+                        "items.conversion_factor.placeholder"
+                      )}
+                      prepend={
+                        <ThemedMaterialCommunityIcons
+                          size={18}
+                          name="swap-horizontal"
+                          color="onSurface"
+                        />
+                      }
+                      helpText={getString(
+                        "items.conversion_factor.description"
+                      )}
+                    />
+                  </Show>
+                </LabeledBorder>
+              ))}
+            </View>
+          </Show>
+
+          {/* Error Message for Units */}
+          <Show if={errors.units?.message}>
+            <ErrorMessage error={errors.units?.message} />
+          </Show>
+
+          <Seperator />
         </Show>
-
-        <Seperator />
       </View>
+
+      {/* Submit Button */}
       <ThemedButton
         title={getString("common.save.label")}
         onPress={handleSubmitForm}
@@ -366,8 +568,9 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
 
 export default ItemForm;
 
+// Styles
 const styles = StyleSheet.create((theme) => ({
   description: {
-    color: getColorWithAlpha(theme.colors.onBackground, 0.5),
+    color: getColorWithAlpha(theme.colors.onBackground, 0.5), // Use semi-transparent theme color
   },
 }));

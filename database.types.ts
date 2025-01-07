@@ -165,7 +165,7 @@ export type Database = {
           created_at: string
           deleted: boolean
           id: string
-          is_primary: boolean | null
+          is_base_unit: boolean | null
           item_id: string | null
           unit_id: string | null
           updated_at: string
@@ -175,7 +175,7 @@ export type Database = {
           created_at?: string
           deleted?: boolean
           id?: string
-          is_primary?: boolean | null
+          is_base_unit?: boolean | null
           item_id?: string | null
           unit_id?: string | null
           updated_at?: string
@@ -185,7 +185,7 @@ export type Database = {
           created_at?: string
           deleted?: boolean
           id?: string
-          is_primary?: boolean | null
+          is_base_unit?: boolean | null
           item_id?: string | null
           unit_id?: string | null
           updated_at?: string

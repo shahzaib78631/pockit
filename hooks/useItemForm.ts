@@ -1,11 +1,10 @@
 import { useAppContext } from "@/context/AppContext";
 import { generateId, supabase } from "@/database/SupaLegend";
-import { ItemFormValues } from "@/forms/schemas/formSchemas";
-import { itemsRowSchema } from "@/forms/schemas/schemas";
+import { ItemFormValues } from "@/types/form/types";
+import { itemFormSchema } from "@/schema/form/schema";
 import { items$, itemsTable$ } from "@/store/items";
 import { Item } from "@/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { use$ } from "@legendapp/state/react";
 import { useForm } from "react-hook-form";
 
 
@@ -23,6 +22,7 @@ const useItemForm = ({item}: Params) => {
     watch,
     setValue,
     getValues,
+    setError,
     formState: { errors },
   } = useForm<ItemFormValues>({
     /** Use Zod schema for form validation */
@@ -39,11 +39,11 @@ const useItemForm = ({item}: Params) => {
       created_at: new Date().toISOString().toString(), // Default to current timestamp
       deleted: false, // Default to not deleted
       id: generateId(), // Default to empty string for unique ID
-      name: '', // Default to empty string for name
       sku: '', // Default to empty string for stock-keeping unit
+      sale_type: "whole", // Default to whole sale type
       updated_at: new Date().toISOString().toString(), // Default to current timestamp
     },
-    resolver: zodResolver(itemsRowSchema),
+    resolver: zodResolver(itemFormSchema),
   });
 
   const updateItem = (item: Item) => {
@@ -66,7 +66,8 @@ const useItemForm = ({item}: Params) => {
     setValue,
     getValues,
     updateItem,
-    createItem
+    createItem,
+    setError,
   };
 };
 

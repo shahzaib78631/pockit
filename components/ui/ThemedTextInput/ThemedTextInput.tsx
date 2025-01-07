@@ -19,6 +19,7 @@ export interface ThemedTextInputProps extends TextInputProps {
   labelStyle?: UnistyleText;
   prepend?: React.ReactNode;
   append?: React.ReactNode;
+  error?: string;
 }
 
 /**
@@ -40,6 +41,7 @@ const ThemedTextInput: React.FC<ThemedTextInputProps> = ({
   prepend,
   append,
   onPress,
+  error,
   ...rest
 }: ThemedTextInputProps): React.ReactElement => {
   const { commonStyles } = useThemeContext();
@@ -60,7 +62,11 @@ const ThemedTextInput: React.FC<ThemedTextInputProps> = ({
     <Pressable
       disabled={!onPress}
       onPress={onPress}
-      style={[styles.container, containerStyle]}
+      style={[
+        styles.container,
+        error ? commonStyles.borderColor("error") : {},
+        containerStyle,
+      ]}
     >
       {isLabelVisible && label && (
         <ThemedText fontSize="sm" style={labelStyle}>

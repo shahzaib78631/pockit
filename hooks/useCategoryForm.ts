@@ -1,13 +1,11 @@
 import { useAppContext } from "@/context/AppContext";
 import { generateId } from "@/database/SupaLegend";
-import { CategoryFormValues } from "@/forms/schemas/formSchemas";
-import { categoriesRowSchema, itemsRowSchema } from "@/forms/schemas/schemas";
+import { CategoryFormValues } from "@/types/form/types";
+import { categoryFormSchema } from "@/schema/form/schema";
 import {  categoriesTable$ } from "@/store/categories";
-import { getString } from "@/strings/translations";
-import { Category, Item } from "@/types/types";
+import { Category } from "@/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner-native";
 
 
 interface Params {
@@ -45,7 +43,7 @@ const useCategoryForm = ({category, onChange}: Params) => {
         created_at: new Date().toISOString().toString(),
       updated_at: new Date().toISOString().toString(),
     },
-    resolver: zodResolver(categoriesRowSchema),
+    resolver: zodResolver(categoryFormSchema),
   });
 
   const updateCategory = (category: Category) => {

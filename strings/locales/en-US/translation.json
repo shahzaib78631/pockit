@@ -127,9 +127,15 @@
       "label": "Unit selling price",
       "placeholder": "Enter unit selling price"
     },
+    "conversion_factor": {
+      "label": "Conversion factor",
+      "placeholder": "Enter conversion factor",
+      "description": "This represents the ratio between this unit and the base unit. For example: 1 box = 24 pcs"
+    },
     "sub_units_count": {
       "label": "Sub-units count",
-      "placeholder": "Enter sub-units count"
+      "placeholder": "Enter sub-units count",
+      "description": "This represents the ratio between this unit and the base unit. For example: 1 box = 24 pcs"
     },
     "buying_price": {
       "label": "Buying price",
@@ -147,6 +153,10 @@
       "count": "Unit {{count}}",
       "description": "Add units for this item",
       "placeholder": "Select unit"
+    },
+    "is_base_unit": {
+      "label": "Is base unit",
+      "placeholder": "Is this unit a base unit"
     },
     "current_stock": {
       "label": "Quantity"

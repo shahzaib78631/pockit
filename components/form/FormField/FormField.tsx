@@ -40,6 +40,7 @@ import {
   useObserve,
   useObserveEffect,
 } from "@legendapp/state/react";
+import { commonStyles } from "@/theme/styles";
 
 /**
  * Props for the base form field component.
@@ -73,6 +74,8 @@ interface BaseFormFieldProps extends Omit<TextInputProps, "onChange"> {
   checkboxPosition?: "left" | "right";
 
   formatter?: (value: string) => string;
+
+  interceptOnChange?: (value: any, onChange: Function) => void;
 }
 
 /**
@@ -149,6 +152,7 @@ const FormField = ({
   type = "input",
   checkboxPosition = "left",
   formatter,
+  interceptOnChange,
   ...props
 }: FormFieldProps): JSX.Element => {
   // Participants sheet reference
@@ -241,6 +245,7 @@ const FormField = ({
             append={append}
             containerStyle={containerStyle}
             onPress={handleShowPicker}
+            error={error?.message}
             {...props}
           />
           {renderPickerComponent && renderPickerComponent(value, onChange)}
@@ -265,6 +270,7 @@ const FormField = ({
               inputStyle={inputStyle}
               prepend={prepend}
               append={append}
+              error={error?.message}
               containerStyle={containerStyle}
               {...props}
             />
@@ -303,6 +309,7 @@ const FormField = ({
         inputStyle={inputStyle}
         prepend={prepend}
         append={append}
+        error={error?.message}
         containerStyle={containerStyle}
         {...props}
       />
@@ -318,8 +325,14 @@ const FormField = ({
         render={({ field: { onChange, value } }) =>
           renderFieldByType({
             value,
-            onChange: (text) =>
-              formatter ? onChange(formatter(text)) : onChange(text),
+            onChange: (text) => {
+              if (interceptOnChange) {
+                return formatter
+                  ? interceptOnChange(text, (text: string) => formatter(text))
+                  : interceptOnChange(text, (text: string) => onChange(text));
+              } else
+                return formatter ? onChange(formatter(text)) : onChange(text);
+            },
           })
         }
       />
