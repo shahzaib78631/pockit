@@ -6,6 +6,8 @@ import { items$, itemsTable$ } from "@/store/items";
 import { Item } from "@/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { itemUnitsTable$ } from "@/store/itemUnits";
+import { itemPricesTable$ } from "@/store/itemPrices";
 
 
 interface Params {
@@ -31,7 +33,6 @@ const useItemForm = ({item}: Params) => {
       ... item,
       created_at: new Date(item.created_at).toISOString().toString(),
       updated_at: new Date().toISOString().toString(),
-
     } : {
       image_url: null, // Optional field
       barcode: null, // Optional field
@@ -47,15 +48,47 @@ const useItemForm = ({item}: Params) => {
   });
 
   const updateItem = (item: Item) => {
-    if (itemsTable$ && itemsTable$[item.id]) {
-      itemsTable$[item.id].assign(item);
+
+    const { units, prices, ...itemData } = item;
+    
+
+    if (itemsTable$ && itemsTable$[itemData.id]) {
+      itemsTable$[item.id].assign(itemData);
     }
+
+    // if (units && units?.length > 0) {
+    //   units?.forEach(unit => {
+    //     itemUnitsTable$[unit.id].assign(unit);
+    //   });
+    // }
+
+    // if (prices && prices?.length > 0) {
+    //   prices?.forEach(price => {
+    //     itemPricesTable$[price.id].assign(price);
+    //   });
+    // }
+
   };
 
   const createItem = (item: Item) => {
-    if (itemsTable$ && itemsTable$[item.id]) {
-      itemsTable$[item.id].assign(item);
+
+    const { units, prices, ...itemData } = item;
+
+    if (itemsTable$ && itemsTable$[itemData.id]) {
+      itemsTable$[item.id].assign(itemData);
     }
+
+    // if (units && units?.length > 0) {
+    //   units?.forEach(unit => {
+    //     itemUnitsTable$[unit.id].assign(unit);
+    //   });
+    // }
+
+    // if (prices && prices?.length > 0) {
+    //   prices?.forEach(price => {
+    //     itemPricesTable$[price.id].assign(price);
+    //   });
+    // }
   }
 
   return {

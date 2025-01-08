@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   ThemedButton,
   ThemedMaterialCommunityIcons,
@@ -22,6 +22,7 @@ import Seperator from "@/components/Seperator";
 import { useFieldArray } from "react-hook-form";
 import UnitsList from "@/components/lists/UnitsList";
 import LabeledBorder from "@/components/LabeledBorder";
+import { generateId } from "@/database/SupaLegend";
 
 type ItemFormProps = {
   edit: boolean; // Indicates whether the form is in edit mode
@@ -94,26 +95,37 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
   };
 
   // Handle unit selection for the item
-  const handleItemUnitSelection = (unit: Unit, checked?: boolean) => {
-    const unitId = getValues("id");
+  const handleItemUnitSelection = (
+    unit: Unit | null,
+    alreadyExists: boolean
+  ) => {
+    const itemId = getValues("id");
 
-    if (checked) {
+    if (alreadyExists && unit) {
       // Remove unit and associated prices if already selected
       removeUnits(units.findIndex((i) => i.unit_id === unit.id));
       removePrices(prices.findIndex((i) => i.unit_id === unit.id));
     } else {
       // Add unit and default prices if not selected
       appendUnits({
-        unit_id: unit.id,
-        item_id: unitId,
-        is_base_unit: false,
-        conversion_factor: 0,
+        unit_id: "",
+        item_id: itemId,
+        is_base_unit: units.length <= 0 ? true : false,
+        conversion_factor: units.length <= 0 ? 1 : 0,
+        id: generateId(),
+        deleted: false,
+        created_at: new Date().toISOString().toString(),
+        updated_at: new Date().toISOString().toString(),
       });
       appendPrices({
-        unit_id: unit.id,
-        item_id: unitId,
-        buying_price: -1,
-        selling_price: -1,
+        unit_id: "",
+        item_id: itemId,
+        buying_price: 0,
+        selling_price: 0,
+        id: generateId(),
+        deleted: false,
+        created_at: new Date().toISOString().toString(),
+        updated_at: new Date().toISOString().toString(),
       });
     }
   };
@@ -125,23 +137,6 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
     } else {
       handleSubmit(createItem)(); // Call createItem otherwise
     }
-  };
-
-  // Handle display of the units sheet for adding units
-  const handleDisplayUnitsSheet = () => {
-    const itemId = getValues("id");
-    appendUnits({
-      item_id: itemId,
-      unit_id: "",
-      is_base_unit: false,
-      conversion_factor: 0,
-    });
-    appendPrices({
-      unit_id: "",
-      item_id: itemId,
-      buying_price: 0,
-      selling_price: 0,
-    });
   };
 
   const calculateNewConversionFactor = (
@@ -181,6 +176,12 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
       parseFloat(newSellingPrice.toFixed(2))
     );
   };
+
+  const baseUnitIndex = useMemo(() => {
+    return units.findIndex((unit) => unit.is_base_unit);
+  }, [unitsIds]);
+
+  console.log("errors", errors);
 
   return (
     <View style={[commonStyles.gapLg, commonStyles.marginBottomXxl]}>
@@ -325,7 +326,7 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
               borderRadius="lg"
               fontSize="sm"
               variant="primary"
-              onPress={handleDisplayUnitsSheet} // Add a new unit
+              onPress={() => handleItemUnitSelection(null, false)} // Add a new unit
               buttonStyle={commonStyles.paddingMd}
             >
               <ThemedMaterialCommunityIcons
@@ -365,7 +366,8 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
                       <UnitsList
                         onChange={(newUnit: Unit) => {
                           setValue(`units.${index}.unit_id`, newUnit.id); // Set selected unit
-                          setError(`units.${index}.unit_id`, { message: "" }); // Clear errors
+                          setValue(`prices.${index}.unit_id`, newUnit.id); // Set selected unit
+                          setError(`units.${index}.unit_id`, {}); // Clear errors
                         }}
                         value={unit.unit_id}
                       />
@@ -484,21 +486,17 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
                     error={errors?.units?.[index]?.is_base_unit}
                     label={getString("items.is_base_unit.placeholder")}
                     interceptOnChange={(value, onChange) => {
-                      const previousBaseUnitIndex = unitsIds.findIndex(
-                        (unit) => unit.is_base_unit
-                      );
-
                       if (value) {
                         // If a new base unit is selected:
-                        if (previousBaseUnitIndex >= 0) {
+                        if (baseUnitIndex >= 0) {
                           // Reset the previous base unit's is_base_unit and conversion_factor
                           setValue(
-                            `units.${previousBaseUnitIndex}.is_base_unit`,
+                            `units.${baseUnitIndex}.is_base_unit`,
                             false
                           );
                           setValue(
-                            `units.${previousBaseUnitIndex}.conversion_factor`,
-                            0
+                            `units.${baseUnitIndex}.conversion_factor`,
+                            1
                           );
                         }
 
@@ -513,7 +511,7 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
                         });
                       } else {
                         // If the current base unit is unchecked, reset its conversion_factor to 0
-                        setValue(`units.${index}.conversion_factor`, 0);
+                        setValue(`units.${index}.conversion_factor`, 1);
                       }
 
                       // Update the is_base_unit state for the current checkbox
@@ -541,6 +539,12 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
                       helpText={getString(
                         "items.conversion_factor.description"
                       )}
+                      interceptOnChange={(value, onChange) => {
+                        // Update the is_base_unit state for the current checkbox
+                        onChange(value);
+                        // Reset conversion factors of all other units relative to the new base unit
+                        updatePrices(index, baseUnitIndex, value);
+                      }}
                     />
                   </Show>
                 </LabeledBorder>

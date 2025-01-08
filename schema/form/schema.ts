@@ -1,3 +1,4 @@
+import { generateId } from "@/database/SupaLegend";
 import { z } from "zod";
 
 export const categoryFormSchema = z.object({
@@ -21,17 +22,25 @@ export const unitFormSchema = z.object({
 });
 
 export const itemUnitSchema = z.object({
+    id: z.string(),
     item_id: z.string(),
     unit_id: z.string().trim().refine((value) => value.trim().length > 0 , "Please select unit"),
     is_base_unit: z.boolean().default(false),
-    conversion_factor: z.coerce.number().refine(value => value >= 1, "Conversion factor must be atleast 1")
+    conversion_factor: z.coerce.number().refine(value => value > 0, "Conversion factor must be atleast 1"),
+    created_at: z.string().default(new Date().toISOString().toString()),
+    updated_at: z.string().default(new Date().toISOString().toString()),
+    deleted: z.boolean().default(false),
 })
 
 export const itemUnitPriceSchema = z.object({
+    id: z.string(),
     item_id: z.string(),
     unit_id: z.string(),
     buying_price: z.coerce.number().gt(0),
     selling_price: z.coerce.number().gt(0),
+    created_at: z.string().default(new Date().toISOString().toString()),
+    updated_at: z.string().default(new Date().toISOString().toString()),
+    deleted: z.boolean().default(false),
 }) 
 
 export const saleType = z.enum(["whole", "unit"])

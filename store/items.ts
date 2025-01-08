@@ -9,7 +9,7 @@ const options$ = observable({
     search: "",
     searchFields: ["name"],
     sort: "created_at",
-    fields: ["*"],
+    fields: ["*", "prices:item_prices(*)", "units:item_units(*)"],
     page: 1,        // Pagination: Current page
     limit: 2,      // Pagination: Number of items per page
     getAll: true,  // Flag to fetch all items
@@ -31,10 +31,10 @@ export const itemsTable$ = observable(
         });
       },
       update(input, params) {
-        return supabase.from("items").upsert(input as Item).eq("id", input?.id as string).select("*").single()
+        return supabase.rpc("saveitem", {input_item: input})
       },
       updatePartial: true,
-      mode: "set",
+      mode: "assign",
       actions: ["read", "create", "update", "delete"],
       realtime: true,
       // Sync only diffs
@@ -49,10 +49,10 @@ export const itemsTable$ = observable(
         infinite: false, // Retry changes with exponential backoff
       },
       onSaved(){
-        // toast.success(getString("form.items.on_success.description"))
+        toast.success(getString("form.items.on_success.description"))
       },
       onError(error, params) {
-          // toast.error(getString("form.items.on_error.description"))
+          toast.error(getString("form.items.on_error.description"))
       },
     })
   );
