@@ -7,7 +7,7 @@ import { getString } from "@/strings/translations";
 const AddItem = () => {
   return (
     <ThemedView
-      statusbarBackgroundColor="surface2"
+      statusbarBackgroundColor="card"
       title={getString("items.add")}
       goBackEnabled={true}
       scrollEnabled

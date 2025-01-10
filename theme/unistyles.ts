@@ -2,7 +2,7 @@ import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
 import Themes from "@/theme/md3";
 import { Theme, ThemeColors } from "@/theme/types";
 import { baseTheme } from "@/theme/baseTheme";
-import { getColorWithAlpha, getElevationColor } from "@/utils/colors";
+import { getColorWithAlpha, getDimElevationColor, getElevationColor } from "@/utils/colors";
 import { AppThemeName } from "react-native-unistyles/lib/typescript/src/specs/types";
 
 // Define app themes type
@@ -37,10 +37,11 @@ declare module "react-native-unistyles" {
 const extendThemes = (colors: ThemeColors): ThemeColors => ({
   primaryOutline: getColorWithAlpha(colors.primary, 0.2),
   primaryOutlineVariant: getColorWithAlpha(colors.primary, 0.5),
-  surface2: getElevationColor(colors, 0.08),
+  surface: getElevationColor(colors, 0.06),
+  surfaceVariant: getElevationColor(colors, 0.05),
   rippleColor: getColorWithAlpha(colors.primary, 0.12),
-  surfaceReader: getColorWithAlpha(colors.surface, 0.9),
   overlay: getColorWithAlpha("rgb(0,0,0)", 0.1),
+  onBackgroundDim: getDimElevationColor(colors, 0.5),
   ...colors,
 });
 

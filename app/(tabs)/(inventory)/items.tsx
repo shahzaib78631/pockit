@@ -54,14 +54,14 @@ const items = () => {
           <ThemedMaterialCommunityIcons
             name="magnify"
             size={18}
-            color={"onSurface"}
+            color={"mutedForeground"}
           />
         ),
         append: (
           <ThemedMaterialCommunityIcons
             name="filter-variant"
             size={18}
-            color={"onSurface"}
+            color={"mutedForeground"}
           />
         ),
       }}

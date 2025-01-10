@@ -56,3 +56,7 @@ bun supabase-to-zod --input ./database/database.types.ts --output ./forms/schema
 ## Generate supabase types
 
 bunx supabase gen types typescript --project-id id-of-your-project > database.types.ts
+
+## Generate pocketbase types
+
+npx typed-pocketbase --email test@gmail.com --password \_\_RJjt_9uytr2fc -d ./ -f items,units,categories,item_prices,item_units

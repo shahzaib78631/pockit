@@ -72,7 +72,7 @@ const ThemedCheckbox: React.FC<ThemedCheckboxProps> = ({
       </View>
 
       {/* Label text */}
-      <ThemedText fontSize="md" color="onBackground">
+      <ThemedText fontSize="md" color="foreground">
         {label}
       </ThemedText>
     </TouchableOpacity>
@@ -80,7 +80,7 @@ const ThemedCheckbox: React.FC<ThemedCheckboxProps> = ({
 };
 
 export default withUnistyles(ThemedCheckbox, (theme) => ({
-  checkmarkColor: theme.colors.onPrimary,
+  checkmarkColor: theme.colors.primaryForeground,
 }));
 
 const styles = StyleSheet.create((theme) => ({

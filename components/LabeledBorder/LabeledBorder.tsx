@@ -19,7 +19,7 @@ const LabeledBorder: React.FC<LabeledBorderProps> = ({
   return (
     <View>
       <ThemedText
-        color={"onBackground"}
+        color={"foreground"}
         fontSize="md"
         style={[styles.label, labelStyle]}
       >
@@ -33,7 +33,7 @@ const LabeledBorder: React.FC<LabeledBorderProps> = ({
 const styles = StyleSheet.create((theme) => ({
   border: {
     borderWidth: 1,
-    borderColor: theme.colors.onBackground,
+    borderColor: theme.colors.foreground,
     borderRadius: theme.borderRadius.md,
     padding: theme.padding.md,
     borderStyle: "dashed",

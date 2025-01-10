@@ -26,7 +26,7 @@ const ThemedView: React.FC<ThemedViewProps> = ({
   size = "regular", // default size
   scrollEnabled = false,
   goBackEnabled = true,
-  statusbarBackgroundColor = "background",
+  statusbarBackgroundColor = "card",
   actions = [],
   loading = false,
   withBottomTabs = false,
@@ -62,7 +62,7 @@ const ThemedView: React.FC<ThemedViewProps> = ({
               : commonStyles.paddingVerticalXl,
             commonStyles.rowJustifySpaceBetween,
             commonStyles.rowAlignCenter,
-            commonStyles.backgroundColor("surface2"),
+            commonStyles.backgroundColor("card"),
             size === "large" && {
               flexDirection: "column",
               alignItems: "flex-start",
@@ -80,7 +80,7 @@ const ThemedView: React.FC<ThemedViewProps> = ({
                   <ThemedMaterialIcons
                     name="arrow-back"
                     size={18}
-                    color="onPrimaryContainer"
+                    color="cardForeground"
                   />
                 </ThemedButton>
               )}
@@ -90,7 +90,7 @@ const ThemedView: React.FC<ThemedViewProps> = ({
               <ThemedText
                 type="bold"
                 fontSize="xxl"
-                color="onPrimaryContainer"
+                color="cardForeground"
                 style={styles.title}
               >
                 {title}
@@ -122,7 +122,7 @@ const ThemedView: React.FC<ThemedViewProps> = ({
                 <ThemedText
                   type="medium"
                   fontSize="xl"
-                  color="onPrimaryContainer"
+                  color="cardForeground"
                   style={styles.largeTitle}
                 >
                   {title}

@@ -61,6 +61,10 @@
       "label": "Item id",
       "placeholder": "Enter item id"
     },
+    "quantity": {
+      "label": "Quantity",
+      "placeholder": "Enter quantity"
+    },
     "sku": {
       "label": "Sku",
       "placeholder": "Enter sku"

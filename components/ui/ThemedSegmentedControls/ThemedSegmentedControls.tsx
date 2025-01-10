@@ -5,13 +5,13 @@ import SegmentedControl, {
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 
 const UniSegmentedControl = withUnistyles(SegmentedControl, (theme) => ({
-  backgroundColor: theme.colors.surface2,
+  backgroundColor: theme.colors.surface,
   tintColor: theme.colors.primary,
   activeFontStyle: {
-    color: theme.colors.onPrimary,
+    color: theme.colors.primaryForeground,
   },
   fontStyle: {
-    color: theme.colors.outline,
+    color: theme.colors.mutedForeground,
     fontSize: theme.fontSize.md,
   },
 }));

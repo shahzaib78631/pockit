@@ -71,11 +71,13 @@ const BottomAppBar: React.FC<BottomAppBarProps> = ({
                       name="home"
                       size={iconSize}
                       color={
-                        isFocused ? theme.colors.primary : theme.colors.outline
+                        isFocused
+                          ? theme.colors.primary
+                          : theme.colors.accentForeground
                       }
                     />
                     <ThemedText
-                      color={isFocused ? "primary" : "outline"}
+                      color={isFocused ? "primary" : "accentForeground"}
                       fontSize="xs"
                       type="semiBold"
                     >
@@ -90,11 +92,13 @@ const BottomAppBar: React.FC<BottomAppBarProps> = ({
                       name="folder"
                       size={iconSize}
                       color={
-                        isFocused ? theme.colors.primary : theme.colors.outline
+                        isFocused
+                          ? theme.colors.primary
+                          : theme.colors.accentForeground
                       }
                     />
                     <ThemedText
-                      color={isFocused ? "primary" : "outline"}
+                      color={isFocused ? "primary" : "accentForeground"}
                       fontSize="xs"
                       type="semiBold"
                     >
@@ -109,11 +113,13 @@ const BottomAppBar: React.FC<BottomAppBarProps> = ({
                       name="group"
                       size={iconSize}
                       color={
-                        isFocused ? theme.colors.primary : theme.colors.outline
+                        isFocused
+                          ? theme.colors.primary
+                          : theme.colors.accentForeground
                       }
                     />
                     <ThemedText
-                      color={isFocused ? "primary" : "outline"}
+                      color={isFocused ? "primary" : "accentForeground"}
                       fontSize="xs"
                       type="semiBold"
                     >
@@ -128,11 +134,13 @@ const BottomAppBar: React.FC<BottomAppBarProps> = ({
                       name="settings"
                       size={iconSize - 4}
                       color={
-                        isFocused ? theme.colors.primary : theme.colors.outline
+                        isFocused
+                          ? theme.colors.primary
+                          : theme.colors.accentForeground
                       }
                     />
                     <ThemedText
-                      color={isFocused ? "primary" : "outline"}
+                      color={isFocused ? "primary" : "accentForeground"}
                       fontSize="xs"
                       type="semiBold"
                     >
@@ -175,9 +183,9 @@ const styles = StyleSheet.create((theme, rt) => ({
     justifyContent: "space-around",
     alignItems: "center",
     borderTopWidth: 0,
-    borderColor: theme.colors.primaryOutline,
+    borderColor: theme.colors.border,
     position: "relative",
-    backgroundColor: theme.colors.surface2,
+    backgroundColor: theme.colors.card,
     paddingTop: theme.padding.lg,
     paddingBottom: rt.insets.bottom + 5,
   },

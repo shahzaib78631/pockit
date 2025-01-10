@@ -21,7 +21,7 @@ const ThemedText: React.FC<ThemedTextProps> = ({
   style,
   type = "regular",
   fontSize = "md",
-  color = "onSurface", // Default color
+  color = "cardForeground", // Default color
   textAlign = "auto", // Default alignment
   ...otherProps
 }) => {

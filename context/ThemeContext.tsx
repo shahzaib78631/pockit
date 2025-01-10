@@ -45,14 +45,14 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       setTimeout(async () => {
         setStatusBarColor(theme.colors);
         changeNavigationBarColor(
-          Color(theme.colors.surface2).hex(),
+          Color(theme.colors.surface).hex(),
           theme.colors.isDark
         );
       }, 50);
     } else {
       setStatusBarColor(theme.colors);
       changeNavigationBarColor(
-        Color(theme.colors.surface2).hex(),
+        Color(theme.colors.surface).hex(),
         theme.colors.isDark
       );
     }

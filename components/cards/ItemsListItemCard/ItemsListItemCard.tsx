@@ -8,9 +8,7 @@ import {
   ThemedText,
 } from "@/components/ui";
 
-import { getString } from "@/strings/translations";
 import { StyleSheet } from "react-native-unistyles";
-import { formatCurrency } from "@/utils/formatCurrency";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 
 import Reanimated, {
@@ -18,10 +16,10 @@ import Reanimated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { commonStyles } from "@/theme/styles";
-import { Tables } from "@/database/database.types";
-import { observer, use$ } from "@legendapp/state/react";
 import { useAppContext } from "@/context/AppContext";
 import { Item } from "@/types/types";
+import { ThemedFontAwesome6 } from "@/components/ui/ThemedIcons/ThemedIcons";
+import { getString } from "@/strings/translations";
 
 interface RightActionProps {
   prog: SharedValue<number>;
@@ -94,13 +92,13 @@ const ItemsListItemCard = ({
             commonStyles.width100,
             commonStyles.paddingLg,
             commonStyles.borderBottom1,
-            commonStyles.borderColor("background"),
+            commonStyles.borderColor("primaryOutline"),
           ]}
         >
           <View style={[commonStyles.rowAlignCenter, commonStyles.gapSm]}>
             <ThemedText
-              type="medium"
-              fontSize="md"
+              type="bold"
+              fontSize="lg"
             >{`[${item?.sku}] ${item?.name}`}</ThemedText>
           </View>
           <ThemedMaterialCommunityIcons
@@ -112,17 +110,56 @@ const ItemsListItemCard = ({
         <View
           style={[
             commonStyles.width100,
-            commonStyles.rowAlignCenter,
-            commonStyles.justifyBetween,
+            commonStyles.paddingLg,
+            commonStyles.gapMd,
           ]}
         >
-          <View style={styles.addBtn}>
-            <ThemedButton
-              color={"secondary"}
-              buttonStyle={commonStyles.paddingSm}
-            >
-              <ThemedMaterialIcons color="onSecondary" name="add" size={18} />
-            </ThemedButton>
+          <View
+            style={[
+              commonStyles.rowAlignCenter,
+              commonStyles.gapSm,
+              commonStyles.justifyBetween,
+              commonStyles.width100,
+            ]}
+          >
+            <View style={[commonStyles.rowAlignCenter, commonStyles.gapSm]}>
+              <ThemedFontAwesome6
+                color="cardForeground"
+                size={14}
+                name="boxes-packing"
+              />
+              <ThemedText type="semiBold" fontSize="md" color="cardForeground">
+                {getString("items.quantity.label")}
+              </ThemedText>
+            </View>
+            <ThemedText type="bold" fontSize="md">
+              {`${0} ${
+                store$.UnitsStore.getUnit(item?.base_unit?.unit_id as string)
+                  ?.symbol
+              }`}
+            </ThemedText>
+          </View>
+          <View
+            style={[
+              commonStyles.rowAlignCenter,
+              commonStyles.gapSm,
+              commonStyles.justifyBetween,
+              commonStyles.width100,
+            ]}
+          >
+            <View style={[commonStyles.rowAlignCenter, commonStyles.gapSm]}>
+              <ThemedFontAwesome6
+                color="onBackground"
+                size={14}
+                name="money-bills"
+              />
+              <ThemedText type="semiBold" fontSize="md" color="cardForeground">
+                {getString("items.selling_price.label")}
+              </ThemedText>
+            </View>
+            <ThemedText type="bold" fontSize="md">
+              {`${item.base_unit?.selling_price}${"$"}`}
+            </ThemedText>
           </View>
         </View>
       </BaseCard>
@@ -148,7 +185,7 @@ const styles = StyleSheet.create((theme) => ({
     marginLeft: theme.margin.md,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: theme.colors.error,
+    backgroundColor: theme.colors.destructive,
     borderRadius: theme.borderRadius.md,
   },
   addBtn: {

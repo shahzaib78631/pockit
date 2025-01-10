@@ -11,8 +11,6 @@ import { UnistylesRuntime } from "react-native-unistyles";
 const AppearanceSettings = () => {
   const { setTheme, commonStyles } = useThemeContext();
 
-  console.log("UnistylesRuntime.themeName", UnistylesRuntime.themeName);
-
   function setCurrentTheme(theme: { name: string; isDark: boolean }) {
     console.log("setCurrentTheme", theme);
   }
@@ -20,7 +18,7 @@ const AppearanceSettings = () => {
   return (
     <ThemedView
       goBackEnabled={true}
-      statusbarBackgroundColor="surface2"
+      statusbarBackgroundColor="card"
       style={{ paddingHorizontal: 0 }}
       title={getString("settings.appearance")}
     >
@@ -37,7 +35,7 @@ const AppearanceSettings = () => {
           {getString("appearance.app_theme")}
         </ThemedText>
         <ThemedText
-          color="onSurface"
+          color="cardForeground"
           fontSize="md"
           type="regular"
           style={[
@@ -80,7 +78,7 @@ const AppearanceSettings = () => {
           showsHorizontalScrollIndicator={false}
         />
         <ThemedText
-          color="onSurface"
+          color="cardForeground"
           fontSize="md"
           type="regular"
           style={[

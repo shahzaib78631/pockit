@@ -64,6 +64,13 @@ export const itemSchema = z
     sale_type: z.enum(["whole", "unit"]),
     units: z.array(itemUnitSchema).optional(),
     prices: z.array(itemUnitPriceSchema).optional(),
+    base_unit: z.object({
+        unit_id: z.string(),
+        conversion_factor: z.number(),
+        buying_price: z.number(),
+        selling_price: z.number(),
+        price_id: z.string(),
+    }).optional(),
   })
   .refine(
     (data) =>

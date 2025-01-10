@@ -34,7 +34,7 @@ type ItemFormProps = {
 const ThemedBarcode = withUnistyles(Barcode, (theme) => ({
   options: {
     background: theme.colors.background, // Use theme-based background
-    lineColor: theme.colors.onBackground, // Use theme-based line color
+    lineColor: theme.colors.foreground, // Use theme-based line color
   },
 }));
 
@@ -187,7 +187,7 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
   return (
     <View style={[commonStyles.gapLg, commonStyles.marginBottomXxl]}>
       {/* Title */}
-      <ThemedText fontSize="xxl" type="medium" color="onBackground">
+      <ThemedText fontSize="xxl" type="medium" color="foreground">
         Item Info
       </ThemedText>
 
@@ -200,7 +200,11 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
           error={errors.name}
           placeholder={getString("items.name.placeholder")}
           prepend={
-            <ThemedMaterialIcons size={18} name="mode-edit" color="onSurface" />
+            <ThemedMaterialIcons
+              size={18}
+              name="mode-edit"
+              color="mutedForeground"
+            />
           }
         />
 
@@ -215,7 +219,7 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
             <ThemedMaterialCommunityIcons
               size={18}
               name="unicode"
-              color="onSurface"
+              color="mutedForeground"
             />
           }
         />
@@ -231,7 +235,7 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
             <ThemedMaterialCommunityIcons
               size={18}
               name="barcode"
-              color="onSurface"
+              color="mutedForeground"
             />
           }
         />
@@ -264,13 +268,17 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
             />
           }
           prepend={
-            <ThemedMaterialIcons size={18} name="category" color="onSurface" />
+            <ThemedMaterialIcons
+              size={18}
+              name="category"
+              color="mutedForeground"
+            />
           }
           append={
             <ThemedMaterialCommunityIcons
               size={18}
               name="chevron-down"
-              color="onSurface"
+              color="mutedForeground"
             />
           }
           renderRightAction={() => (
@@ -281,7 +289,7 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
               <ThemedMaterialCommunityIcons
                 size={18}
                 name="plus"
-                color="onPrimary"
+                color="primaryForeground"
               />
             </ThemedButton>
           )}
@@ -333,7 +341,7 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
               <ThemedMaterialCommunityIcons
                 name="plus"
                 size={18}
-                color="onPrimary"
+                color="primaryForeground"
               />
             </ThemedButton>
           </View>
@@ -377,7 +385,7 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
                       <ThemedMaterialIcons
                         size={18}
                         name="category"
-                        color="onSurface"
+                        color="mutedForeground"
                       />
                     }
                     append={
@@ -395,7 +403,7 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
                         <ThemedMaterialCommunityIcons
                           size={18}
                           name="delete"
-                          color="error"
+                          color="destructive"
                         />
                       </ThemedButton>
                     }
@@ -421,7 +429,7 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
                           <ThemedMaterialCommunityIcons
                             size={18}
                             name="cash"
-                            color="onSurface"
+                            color="mutedForeground"
                           />
                         }
                         interceptOnChange={(value, onChange) => {
@@ -459,7 +467,7 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
                           <ThemedMaterialCommunityIcons
                             size={18}
                             name="cash"
-                            color="onSurface"
+                            color="mutedForeground"
                           />
                         }
                         interceptOnChange={(value, onChange) => {
@@ -540,7 +548,7 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
                         <ThemedMaterialCommunityIcons
                           size={18}
                           name="swap-horizontal"
-                          color="onSurface"
+                          color="mutedForeground"
                         />
                       }
                       helpText={getString(
@@ -582,6 +590,6 @@ export default ItemForm;
 // Styles
 const styles = StyleSheet.create((theme) => ({
   description: {
-    color: getColorWithAlpha(theme.colors.onBackground, 0.5), // Use semi-transparent theme color
+    color: getColorWithAlpha(theme.colors.primaryForeground, 0.5), // Use semi-transparent theme color
   },
 }));

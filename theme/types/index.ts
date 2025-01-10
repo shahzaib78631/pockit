@@ -4,42 +4,41 @@ export interface MD3ThemeType {
   id: number;
   name: string;
   isDark: boolean;
-  primary: string;
-  onPrimary: string;
-  primaryContainer: string;
-  onPrimaryContainer: string;
-  secondary: string;
-  onSecondary: string;
-  secondaryContainer: string;
-  onSecondaryContainer: string;
-  tertiary: string;
-  onTertiary: string;
-  tertiaryContainer: string;
-  onTertiaryContainer: string;
   background: string;
-  onBackground: string;
-  surface: string;
-  onSurface: string;
-  error: string;
-  onError: string;
-  errorContainer: string;
-  onErrorContainer: string;
-  outline: string;
-  inverseSurface: string;
-  inverseOnSurface: string;
-  inversePrimary: string;
-  danger: string;
+  foreground: string;
+  primary: string;
+  primaryForeground: string;
+  card: string;
+  cardForeground: string;
+  popover: string;
+  popoverForeground: string;
+  secondary: string;
+  secondaryForeground: string;
+  muted: string;
+  mutedForeground: string;
+  accent: string;
+  accentForeground: string;
+  destructive: string;
+  destructiveForeground: string;
+  border: string;
+  input: string;
+  ring: string;
+  chart1: string;
+  chart2: string;
+  chart3: string;
+  chart4: string;
+  chart5: string;
 }
 
 export interface ThemeColors extends MD3ThemeType {
   code: string;
   overlay?: string;
   rippleColor?: string;
-  surface2?: string;
-  surfaceReader?: string;
+  surface?: string;
   primaryOutline?: string;
-  onSurfaceVariant?: string;
+  surfaceVariant?: string;
   primaryOutlineVariant?: string;
+  onBackgroundDim?: string;
 }
 
 export interface ThemeType {

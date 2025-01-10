@@ -54,7 +54,7 @@ export default function Profile() {
   return (
     <ThemedView
       title={getString("settings.title")}
-      statusbarBackgroundColor="surface2"
+      statusbarBackgroundColor="card"
       goBackEnabled={false}
       style={commonStyles.paddingHorizontalNone}
     >
@@ -76,7 +76,7 @@ export default function Profile() {
               size={24}
               color="primary"
             />
-            <ThemedText type="light" fontSize="lg" color="onBackground">
+            <ThemedText type="light" fontSize="lg" color="foreground">
               {item.label}
             </ThemedText>
           </TouchableOpacity>

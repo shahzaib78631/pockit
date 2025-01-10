@@ -61,7 +61,7 @@ const ThemePicker = ({ theme, selected, onPress }: ThemePickerProps) => {
         >
           <ThemedMaterialCommunityIcons
             name="check"
-            color={theme?.onPrimary}
+            color={theme?.primaryForeground}
             size={15}
             style={styles.checkIcon(theme.id)}
           />
@@ -69,7 +69,7 @@ const ThemePicker = ({ theme, selected, onPress }: ThemePickerProps) => {
             <View
               style={[
                 styles.topBarAccent,
-                { backgroundColor: theme?.onSurface },
+                { backgroundColor: theme?.cardForeground },
               ]}
             />
           </View>
@@ -77,14 +77,14 @@ const ThemePicker = ({ theme, selected, onPress }: ThemePickerProps) => {
             <View
               style={[
                 styles.titleBar,
-                { backgroundColor: theme?.onSurfaceVariant },
+                { backgroundColor: theme?.surfaceVariant },
               ]}
             />
             <View style={styles.row}>
               <View
                 style={[
                   styles.rowItemLarge,
-                  { backgroundColor: theme?.onSurface },
+                  { backgroundColor: theme?.cardForeground },
                 ]}
               />
               <View
@@ -98,13 +98,13 @@ const ThemePicker = ({ theme, selected, onPress }: ThemePickerProps) => {
               <View
                 style={[
                   styles.rowItemSmall,
-                  { backgroundColor: theme?.onSurfaceVariant },
+                  { backgroundColor: theme?.surfaceVariant },
                 ]}
               />
               <View
                 style={[
                   styles.rowItemSmall,
-                  { backgroundColor: theme?.onSurfaceVariant },
+                  { backgroundColor: theme?.surfaceVariant },
                 ]}
               />
             </View>
@@ -113,7 +113,7 @@ const ThemePicker = ({ theme, selected, onPress }: ThemePickerProps) => {
             style={[
               styles.bottomBar,
               {
-                backgroundColor: color(theme?.primary).alpha(0.08).string(),
+                backgroundColor: theme.card,
               },
             ]}
           >
@@ -121,14 +121,14 @@ const ThemePicker = ({ theme, selected, onPress }: ThemePickerProps) => {
               <View
                 style={[
                   styles.dot,
-                  { backgroundColor: theme?.onSurface, opacity: 0.54 },
+                  { backgroundColor: theme?.cardForeground, opacity: 0.54 },
                 ]}
               />
               <View style={[styles.dot, { backgroundColor: theme?.primary }]} />
               <View
                 style={[
                   styles.dot,
-                  { backgroundColor: theme?.onSurface, opacity: 0.54 },
+                  { backgroundColor: theme?.cardForeground, opacity: 0.54 },
                 ]}
               />
             </View>
@@ -136,7 +136,7 @@ const ThemePicker = ({ theme, selected, onPress }: ThemePickerProps) => {
         </TouchableOpacity>
       </View>
       <ThemedText
-        color="onSurfaceVariant"
+        color="foreground"
         fontSize="sm"
         style={[commonStyles.paddingVerticalMd, commonStyles.textCenter]}
       >

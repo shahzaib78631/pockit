@@ -81,7 +81,7 @@ const ThemedTextInput: React.FC<ThemedTextInputProps> = ({
           style={[styles.input, commonStyles.flex1, inputStyle]}
           placeholder={placeholder}
           value={value}
-          placeholderTextColor={theme.colors.onSurface}
+          placeholderTextColor={theme.colors.mutedForeground}
           onChangeText={onChangeText}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -106,16 +106,16 @@ const styles = StyleSheet.create((theme) => ({
     marginVertical: theme.spacing.sm,
     gap: theme.spacing.sm,
     borderWidth: 1,
-    borderColor: theme.colors.primaryOutline,
+    borderColor: theme.colors.border,
     borderRadius: theme.borderRadius.lg,
     paddingHorizontal: theme.padding.lg,
-    backgroundColor: theme.colors.surface2,
+    backgroundColor: theme.colors.card,
     paddingVertical: theme.spacing.sm,
     overflow: "hidden",
     height: 48,
     variants: {
       isFocused: {
-        true: { borderColor: theme.colors.primary, borderWidth: 1 },
+        true: { borderColor: theme.colors.ring, borderWidth: 1 },
       },
     },
   },
@@ -124,7 +124,7 @@ const styles = StyleSheet.create((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     borderRadius: theme.borderRadius.md,
-    backgroundColor: theme.colors.surface2,
+    backgroundColor: theme.colors.card,
     position: "relative",
     columnGap: theme.spacing.md,
     variants: {
@@ -141,7 +141,7 @@ const styles = StyleSheet.create((theme) => ({
     },
   },
   input: {
-    color: theme.colors.onSurface,
+    color: theme.colors.cardForeground,
   },
 }));
 

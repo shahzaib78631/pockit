@@ -337,7 +337,7 @@ const FormField = ({
         }
       />
       {helpText && (
-        <ThemedText fontSize="sm" color="outline">
+        <ThemedText fontSize="sm" color="mutedForeground">
           {helpText}
         </ThemedText>
       )}

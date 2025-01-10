@@ -39,11 +39,7 @@ const ThemedListEmptyComponent: React.FC<ThemedListEmptyComponentProps> = ({
    * Default icon component to display when no custom icon is provided.
    */
   const DefaultIcon = () => (
-    <ThemedMaterialCommunityIcons
-      name="balloon"
-      size={120}
-      color={"surface2"}
-    />
+    <ThemedMaterialCommunityIcons name="balloon" size={120} color={"surface"} />
   );
 
   return (

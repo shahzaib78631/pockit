@@ -58,7 +58,7 @@ const ThemedRadioButton: React.FC<ThemedRadioButtonProps> = ({
       </View>
 
       {/* Label text */}
-      <ThemedText fontSize="md" color="onBackground">
+      <ThemedText fontSize="md" color="foreground">
         {label}
       </ThemedText>
     </TouchableOpacity>

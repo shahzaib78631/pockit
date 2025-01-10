@@ -65,7 +65,7 @@ const ThemedButton: React.FC<ThemedButtonProps> = ({
       {loading ? (
         <ThemedActivityIndicator
           uniProps={(theme) => ({
-            color: indicatorColor || theme.colors.onPrimary,
+            color: indicatorColor || theme.colors.primaryForeground,
           })}
         />
       ) : (
@@ -113,8 +113,8 @@ const styles = StyleSheet.create((theme) => ({
   title: {
     variants: {
       type: {
-        primary: { color: theme.colors.onPrimary },
-        secondary: { color: theme.colors.onSecondary },
+        primary: { color: theme.colors.primaryForeground },
+        secondary: { color: theme.colors.secondaryForeground },
         text: { color: theme.colors.primary },
         outline: { color: theme.colors.primary },
         "dashed-outline": { color: theme.colors.primary },
@@ -122,7 +122,7 @@ const styles = StyleSheet.create((theme) => ({
     },
   },
   activityIndicator: {
-    color: theme.colors.onPrimary,
+    color: theme.colors.primaryForeground,
   },
 }));
 

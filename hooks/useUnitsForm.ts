@@ -41,8 +41,8 @@ const useUnitsForm = ({unit, onChange}: Params) => {
     defaultValues: unit 
     ? {
       ... unit,
-      created_at: new Date(unit.created_at).toISOString().toString(),
-      updated_at: new Date().toISOString().toString(),
+      created_at: new Date(unit.created_at).toString(),
+      updated_at: new Date().toString(),
 
     } : {
         id: generateId(),
@@ -50,8 +50,8 @@ const useUnitsForm = ({unit, onChange}: Params) => {
         symbol: "",
         base_unit: false,
         deleted: false,
-        created_at: new Date().toISOString().toString(),
-      updated_at: new Date().toISOString().toString(),
+        created_at: new Date().toString(),
+      updated_at: new Date().toString(),
     },
     resolver: zodResolver(unitSchema),
   });

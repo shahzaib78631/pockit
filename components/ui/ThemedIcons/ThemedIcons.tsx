@@ -4,6 +4,7 @@ import {
   MaterialIcons,
   Ionicons,
   AntDesign,
+  FontAwesome6,
 } from "@expo/vector-icons";
 import { Colors } from "@/theme/types";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
@@ -16,7 +17,8 @@ interface Props {
     | keyof typeof FontAwesome.glyphMap
     | keyof typeof MaterialCommunityIcons.glyphMap
     | keyof typeof Ionicons.glyphMap
-    | keyof typeof AntDesign.glyphMap;
+    | keyof typeof AntDesign.glyphMap
+    | keyof typeof FontAwesome6.glyphMap;
   /** Icon color - Can be a string or a key from your theme's color palette */
   color: keyof Colors | (string & {});
   /** Size of the icon */
@@ -39,6 +41,7 @@ const UniThemedFontAwesome = withUnistyles(FontAwesome);
 const UniThemedMaterialIcons = withUnistyles(MaterialIcons);
 const UniThemedIonicons = withUnistyles(Ionicons);
 const UniThemedAntDesign = withUnistyles(AntDesign);
+const UniThemedFontAwesome6 = withUnistyles(FontAwesome6);
 
 /** Themed MaterialCommunityIcons */
 const ThemedMaterialCommunityIcons = ({ name, color, size, style }: Props) => {
@@ -94,6 +97,19 @@ const ThemedIonicons = ({ name, color, size }: Props) => {
 };
 
 /** Themed AntDesign */
+const ThemedFontAwesome6 = ({ name, color, size }: Props) => {
+  return (
+    <UniThemedFontAwesome6
+      name={name as keyof typeof AntDesign.glyphMap}
+      size={size}
+      uniProps={(theme) => ({
+        color: resolveColor(theme, color),
+      })}
+    />
+  );
+};
+
+/** Themed AntDesign */
 const ThemedAntDesign = ({ name, color, size }: Props) => {
   return (
     <UniThemedAntDesign
@@ -118,4 +134,5 @@ export {
   ThemedMaterialIcons,
   ThemedIonicons,
   ThemedAntDesign,
+  ThemedFontAwesome6,
 };

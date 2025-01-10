@@ -107,6 +107,8 @@ export interface StringMap {
   "items.conversion_factor.placeholder": string;
   "items.conversion_factor.description": string;
   "items.is_active.label": string;
+  "items.quantity.label": string;
+  "items.quantity.description": string;
   "items.current_stock.label": string;
   "items.metadata.label": string;
   "items.metadata.placeholder": string;

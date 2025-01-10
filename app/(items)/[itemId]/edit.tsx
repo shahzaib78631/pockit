@@ -13,7 +13,7 @@ const EditItem = () => {
 
   return (
     <ThemedView
-      statusbarBackgroundColor="surface2"
+      statusbarBackgroundColor="card"
       title={getString("items.edit")}
       goBackEnabled={true}
       scrollEnabled

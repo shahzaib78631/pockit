@@ -15,8 +15,6 @@ import {
 
 // Components
 import ThemedView from "@/components/ui/ThemedView";
-import ThemedText from "@/components/ui/ThemedText";
-import ThemedButton from "@/components/ui/ThemedButton";
 
 // Context
 import { useThemeContext } from "@/context/ThemeContext";
@@ -42,7 +40,7 @@ const ThemedMaterialTopTabs = withUnistyles(MaterialTopTabs, (theme) => ({
       paddingHorizontal: theme.padding.sm,
     },
     tabBarStyle: {
-      backgroundColor: theme.colors.surface2,
+      backgroundColor: theme.colors.card,
       elevation: 0,
     },
     tabBarLabelStyle: {
@@ -50,7 +48,7 @@ const ThemedMaterialTopTabs = withUnistyles(MaterialTopTabs, (theme) => ({
       fontSize: theme.fontSize.sm,
     },
     tabBarActiveTintColor: theme.colors.primary,
-    tabBarInactiveTintColor: theme.colors.outline,
+    tabBarInactiveTintColor: theme.colors.accentForeground,
     tabBarAllowFontScaling: true,
     tabBarGap: 0,
     tabBarIndicatorStyle: {
@@ -98,7 +96,7 @@ export default function TopAppBar({
     <ThemedView
       style={{ paddingVertical: 0, paddingHorizontal: 0 }}
       statusBarHeaderStyle={commonStyles.borderBottom0}
-      statusbarBackgroundColor="surface2"
+      statusbarBackgroundColor="card"
       actions={actions}
       title={title}
       size={size}

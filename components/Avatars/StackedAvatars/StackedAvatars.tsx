@@ -122,7 +122,7 @@ const styles = StyleSheet.create((theme) => ({
     borderRadius: avatarSize / 2,
     marginLeft: overlap,
     padding: theme.padding.none,
-    backgroundColor: theme.colors.surface2,
+    backgroundColor: theme.colors.surface,
   }),
   addLabel: (overlap: number) => ({
     marginLeft: overlap,

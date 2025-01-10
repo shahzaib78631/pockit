@@ -19,7 +19,7 @@ const BaseCard: React.FC<BaseCardProps> = ({
   style,
   onPress,
   disabled,
-  color = "surface2",
+  color = "card",
   borderRadius = "lg",
 }: BaseCardProps) => {
   const { commonStyles } = useThemeContext();
@@ -42,11 +42,13 @@ const BaseCard: React.FC<BaseCardProps> = ({
 
 const styles = StyleSheet.create((theme) => ({
   cardContainer: {
-    backgroundColor: theme.colors.surface2,
+    backgroundColor: theme.colors.card,
     padding: theme.margin.xl,
     justifyContent: "center",
     alignItems: "center",
     gap: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
   },
 }));
 

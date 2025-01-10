@@ -19,11 +19,7 @@ const Searchbar: React.FC<SearchbarProps> = (props) => {
       containerStyle={styles.container}
       append={
         <ThemedButton variant="text" buttonStyle={commonStyles.paddingNone}>
-          <ThemedMaterialCommunityIcons
-            name="magnify"
-            size={24}
-            color={"primary"}
-          />
+          <ThemedMaterialCommunityIcons name="" size={24} color={"primary"} />
         </ThemedButton>
       }
       {...props}
