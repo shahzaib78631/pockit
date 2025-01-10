@@ -191,13 +191,13 @@ const FormField = ({
   };
 
   useEffect(() => {
-    if (pickerState.isShown.$ && type === "picker") {
+    if (pickerState.isShown.get() && type === "picker") {
       handleShowPicker();
     }
   }, [fieldValue]);
 
   const handleShowPicker = () => {
-    pickerState.isShown.$ = true;
+    pickerState.isShown.set(true);
 
     if (pickerConfig) {
       // Open picker using pickerConfig if available
@@ -211,7 +211,7 @@ const FormField = ({
           pickerSheetTitle,
         },
       }).then((result) => {
-        pickerState.isShown.$ = false;
+        pickerState.isShown.set(false);
       });
     }
   };

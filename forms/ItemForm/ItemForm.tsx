@@ -12,7 +12,7 @@ import { getString } from "@/strings/translations";
 import { useThemeContext } from "@/context/ThemeContext";
 import { useAppContext } from "@/context/AppContext";
 import { Show } from "@legendapp/state/react";
-import { Category, Item, Unit } from "@/types/types";
+import { Category, Item, ItemUnit, Unit } from "@/types/types";
 import { Barcode } from "expo-barcode-generator";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { CategoriesList } from "@/components/lists";
@@ -22,7 +22,8 @@ import Seperator from "@/components/Seperator";
 import { useFieldArray } from "react-hook-form";
 import UnitsList from "@/components/lists/UnitsList";
 import LabeledBorder from "@/components/LabeledBorder";
-import { generateId } from "@/database/SupaLegend";
+
+import { generateId } from "@/utils/helpers";
 
 type ItemFormProps = {
   edit: boolean; // Indicates whether the form is in edit mode
@@ -340,7 +341,7 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
           {/* Display List of Units if Available */}
           <Show if={unitsIds?.length}>
             <View style={[commonStyles.gapLg, commonStyles.marginVerticalMd]}>
-              {unitsIds?.map((unit, index) => (
+              {unitsIds?.map((unit: ItemUnit, index: number) => (
                 <LabeledBorder
                   key={index}
                   label={getString("items.unit.count", { count: index + 1 })} // Dynamic unit label
@@ -426,15 +427,17 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
                         interceptOnChange={(value, onChange) => {
                           onChange(value);
                           if (unit.is_base_unit) {
-                            unitsIds.forEach((unit, unitIndex) => {
-                              if (unitIndex !== index) {
-                                updatePrices(
-                                  unitIndex,
-                                  index,
-                                  unit.conversion_factor || 1
-                                );
+                            unitsIds.forEach(
+                              (unit: ItemUnit, unitIndex: number) => {
+                                if (unitIndex !== index) {
+                                  updatePrices(
+                                    unitIndex,
+                                    index,
+                                    unit.conversion_factor || 1
+                                  );
+                                }
                               }
-                            });
+                            );
                           }
                         }}
                       />
@@ -463,15 +466,17 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
                           onChange(value);
                           if (unit.is_base_unit) {
                             // Reset conversion factors of all other units relative to the new base unit
-                            unitsIds.forEach((unit, unitIndex) => {
-                              if (unitIndex !== index) {
-                                updatePrices(
-                                  unitIndex,
-                                  index,
-                                  unit.conversion_factor || 1
-                                );
+                            unitsIds.forEach(
+                              (unit: ItemUnit, unitIndex: number) => {
+                                if (unitIndex !== index) {
+                                  updatePrices(
+                                    unitIndex,
+                                    index,
+                                    unit.conversion_factor || 1
+                                  );
+                                }
                               }
-                            });
+                            );
                           }
                         }}
                       />
@@ -501,14 +506,16 @@ const ItemForm = ({ edit, item }: ItemFormProps) => {
                         }
 
                         // Reset conversion factors of all other units relative to the new base unit
-                        unitsIds.forEach((unit, unitIndex) => {
-                          if (unitIndex !== index) {
-                            setValue(
-                              `units.${unitIndex}.conversion_factor`,
-                              calculateNewConversionFactor(unitIndex, index)
-                            );
+                        unitsIds.forEach(
+                          (unit: ItemUnit, unitIndex: number) => {
+                            if (unitIndex !== index) {
+                              setValue(
+                                `units.${unitIndex}.conversion_factor`,
+                                calculateNewConversionFactor(unitIndex, index)
+                              );
+                            }
                           }
-                        });
+                        );
                       } else {
                         // If the current base unit is unchecked, reset its conversion_factor to 0
                         setValue(`units.${index}.conversion_factor`, 1);

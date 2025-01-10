@@ -1,10 +1,9 @@
-import { CategoriesStore$ } from "@/store/categories";
-import { InventoryStore$ } from "@/store/inventory";
+import { pb } from "@/plugins/pocketbase";
+import { CategoriesStore$, categoriesTable$ } from "@/store/categories";
 import { ItemsStore$ } from "@/store/items";
-import { SuppliersStore$ } from "@/store/suppliers";
 import { UnitsStore$ } from "@/store/units";
 import { observable } from "@legendapp/state";
-import React, { createContext, useContext, ReactNode } from "react";
+import React, { createContext, useContext, ReactNode, useEffect } from "react";
 
 // Create the context with a proper type
 const AppContext = createContext<AppContextProps | undefined>(undefined);

@@ -1,12 +1,21 @@
 import { useAppContext } from "@/context/AppContext";
-import { generateId } from "@/database/SupaLegend";
-import { UnitsFormValues } from "@/types/form/types";
-import { unitFormSchema } from "@/schema/form/schema";
-import { unitsTable$ } from "@/store/units";
-import { Unit } from "@/types/types";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+
+// Store
+import {  unitsTable$ } from "@/store/units";
+
+// helopers
+import { generateId } from "@/utils/helpers";
+
+// Form
 import { useForm } from "react-hook-form";
 
+// Schema
+import { unitSchema } from "@/schema";
+
+// Types
+import { UnitsFormValues , Unit} from "@/types";
 
 interface Params {
   unit: Unit | null;
@@ -44,7 +53,7 @@ const useUnitsForm = ({unit, onChange}: Params) => {
         created_at: new Date().toISOString().toString(),
       updated_at: new Date().toISOString().toString(),
     },
-    resolver: zodResolver(unitFormSchema),
+    resolver: zodResolver(unitSchema),
   });
 
   const updateUnit = (unit: Unit) => {

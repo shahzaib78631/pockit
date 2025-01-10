@@ -1,7 +1,9 @@
 import "@/components/sheets/sheets"; // Global Sheets import
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
+import EventSource from "react-native-sse";
 
+global.EventSource = EventSource as any; // Polyfill for EventSource
 // Import fonts library
 import * as Font from "expo-font";
 

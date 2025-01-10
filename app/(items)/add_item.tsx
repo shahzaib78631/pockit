@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import ItemForm from "@/forms/ItemForm/ItemForm";
+import ItemForm from "@/forms/ItemForm";
 import { ThemedView } from "@/components/ui";
 import { getString } from "@/strings/translations";
 

@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { categoryFormSchema, itemFormSchema, unitFormSchema } from "@/schema/form/schema";
+import { categorySchema, itemFormSchema, unitSchema } from "@/schema/form/schema";
 
 export type ItemFormValues = z.infer<typeof itemFormSchema>;
 
-export type CategoryFormValues = z.infer<typeof categoryFormSchema>;
+export type CategoryFormValues = z.infer<typeof categorySchema>;
 
-export type UnitsFormValues = z.infer<typeof unitFormSchema>;
+export type UnitsFormValues = z.infer<typeof unitSchema>;

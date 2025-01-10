@@ -1,41 +1,35 @@
-import { customSynced , supabase} from "@/database/SupaLegend";
-import { Category } from "@/types/types";
+import API from "@/api";
+import { generateId } from "@/utils/helpers";
 import { observable } from "@legendapp/state";
-import { toast } from "sonner-native";
+import { syncedCrud } from "@legendapp/state/sync-plugins/crud";
 
 export const categoriesTable$ = observable(
-    customSynced({
-      supabase,
-      collection: "categories",
-      select: (from) => from.select("*"),
-      actions: ["read", "create", "update", "delete"],
-      initial: Object(),
-      update(input, params) {
-        return supabase.from("categories").upsert(input as Category).eq("id", input?.id as string).select("*").single()
-      },
-       // Persist data and pending changes locally
-      persist: {
-        name: 'categories',
-        retrySync: true, // Persist pending changes and retry
-      },
-      retry: {
-        infinite: true, // Retry changes with exponential backoff
-      },
-      // Sync only diffs
-      changesSince: 'all',
-      realtime: true,
-    })
-  );
+  syncedCrud({
+    generateId,
+    list: async () => {
+      const categories = await API.getCategories();
+      return categories
+    },
+    retry: {
+      infinite: false, // Retry changes with exponential backoff
+    },
+    fieldId: 'id',
+    fieldCreatedAt: 'created_at',
+    fieldUpdatedAt: 'updated_at',
+    fieldDeleted: 'deleted',
+    changesSince: 'last-sync',
+  })
+);
 
 export const CategoriesStore$ = observable({
-    categories: categoriesTable$.get(),
-    getCategories: () => {
-        return Object.values(categoriesTable$.get()) || [];
-    },
-    getCategory: (id: string) => {
-        return categoriesTable$[id]?.get();
-    },
-    getCategoryName: (id: string) => {
-        return categoriesTable$?.[id]?.get()?.name;
-    },
+  categories: categoriesTable$.get(),
+  getCategories: () => {
+    return Object.values(categoriesTable$.get()) || [];
+  },
+  getCategory: (id: string) => {
+    return categoriesTable$[id]?.get();
+  },
+  getCategoryName: (id: string) => {
+    return categoriesTable$?.[id]?.get()?.name;
+  },
 });

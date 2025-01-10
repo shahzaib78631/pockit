@@ -12,7 +12,6 @@ import FabMenu from "@/components/FabMenu";
 import { getString } from "@/strings/translations";
 import { useRouter } from "expo-router";
 import { observer, use$ } from "@legendapp/state/react";
-import { Tables } from "@/database/database.types";
 import { ItemsStore$ } from "@/store/items";
 import { Item } from "@/types/types";
 import { commonStyles } from "@/theme/styles";
@@ -66,7 +65,7 @@ const items = () => {
           />
         ),
       }}
-      renderItem={({ item }: { item: Tables<"items"> }) => (
+      renderItem={({ item }: { item: Item }) => (
         <ItemsListItemCard item={item} onPress={handleItemPress} />
       )}
     />

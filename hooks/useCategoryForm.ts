@@ -1,12 +1,21 @@
 import { useAppContext } from "@/context/AppContext";
-import { generateId } from "@/database/SupaLegend";
-import { CategoryFormValues } from "@/types/form/types";
-import { categoryFormSchema } from "@/schema/form/schema";
-import {  categoriesTable$ } from "@/store/categories";
-import { Category } from "@/types/types";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+
+// Store
+import {  categoriesTable$ } from "@/store/categories";
+
+// helopers
+import { generateId } from "@/utils/helpers";
+
+// Form
 import { useForm } from "react-hook-form";
 
+// Schema
+import { categorySchema } from "@/schema";
+
+// Types
+import { CategoryFormValues , Category} from "@/types";
 
 interface Params {
   category: Category | null;
@@ -43,7 +52,7 @@ const useCategoryForm = ({category, onChange}: Params) => {
         created_at: new Date().toISOString().toString(),
       updated_at: new Date().toISOString().toString(),
     },
-    resolver: zodResolver(categoryFormSchema),
+    resolver: zodResolver(categorySchema),
   });
 
   const updateCategory = (category: Category) => {

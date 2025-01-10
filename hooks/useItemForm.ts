@@ -1,14 +1,9 @@
-import { useAppContext } from "@/context/AppContext";
-import { generateId, supabase } from "@/database/SupaLegend";
-import { ItemFormValues } from "@/types/form/types";
-import { itemFormSchema } from "@/schema/form/schema";
-import { items$, itemsTable$ } from "@/store/items";
-import { Item } from "@/types/types";
+import { generateId } from "@/utils/helpers";
+import { itemsTable$ } from "@/store/items";
+import { itemSchema } from "@/schema";
+import { Item, ItemFormValues } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { itemUnitsTable$ } from "@/store/itemUnits";
-import { itemPricesTable$ } from "@/store/itemPrices";
-
 
 interface Params {
   item: Item | null;
@@ -30,7 +25,7 @@ const useItemForm = ({item}: Params) => {
     /** Use Zod schema for form validation */
     defaultValues: item 
     ? {
-      ... item,
+      ...item,
       created_at: new Date(item.created_at).toISOString().toString(),
       updated_at: new Date().toISOString().toString(),
     } : {
@@ -44,16 +39,16 @@ const useItemForm = ({item}: Params) => {
       sale_type: "whole", // Default to whole sale type
       updated_at: new Date().toISOString().toString(), // Default to current timestamp
     },
-    resolver: zodResolver(itemFormSchema),
+    resolver: zodResolver(itemSchema),
   });
 
-  const updateItem = (item: Item) => {
+  const updateItem = (item: ItemFormValues) => {
 
     const { units, prices, ...itemData } = item;
     
 
     if (itemsTable$ && itemsTable$[itemData.id]) {
-      itemsTable$[item.id].assign(itemData);
+      itemsTable$[item.id].assign(item);
     }
 
     // if (units && units?.length > 0) {
@@ -70,7 +65,7 @@ const useItemForm = ({item}: Params) => {
 
   };
 
-  const createItem = (item: Item) => {
+  const createItem = (item: ItemFormValues) => {
 
     const { units, prices, ...itemData } = item;
 
